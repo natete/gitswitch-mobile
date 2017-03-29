@@ -1,10 +1,10 @@
 export interface PullRequest {
   description: string,
-  userName: string,
+  username: string,
   date: string,
   commits: number,
   comments: number,
-  count: number,
+  id: number,
   from: string,
   to: string
 }
