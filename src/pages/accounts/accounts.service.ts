@@ -9,7 +9,7 @@ import { Constants } from '../../shared/constants';
 @Injectable()
 export class AccountsService {
   private readonly IN_APP_BROWSER_PARAMS = 'location=no,clearcache=yes';
-  private readonly ACCOUNTS_URL = 'api/simple_git/account';
+  private readonly ACCOUNTS_URL = `${Constants.BACKEND_URL}/api/simple_git/account`;
   private readonly FORMAT_URL = '?_format=json';
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
@@ -23,7 +23,7 @@ export class AccountsService {
   getAccounts(): Observable<Account[]> {
     if (this.accountsStream.getValue()) {
       this.http
-          .get(`${Constants.BACKEND_URL}/${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
+          .get(`${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
           .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]));
     }
 
@@ -53,7 +53,7 @@ export class AccountsService {
    * @param accountId the id  of account to be deleted
    */
   deleteAccount(accountId: number): void {
-    const url = `${Constants.BACKEND_URL}/${this.ACCOUNTS_URL}/${accountId}`;
+    const url = `${this.ACCOUNTS_URL}/${accountId}`;
     this.http
         .delete(url)
         .subscribe(() => this.accountsStream.next(
@@ -106,7 +106,7 @@ export class AccountsService {
     const params: any = urlParams
       .split('&')
       .reduce((acc, param) => this.stringParamToObjectParam(acc, param), {});
-    const url = `${Constants.BACKEND_URL}/${this.ACCOUNTS_URL}${this.FORMAT_URL}`;
+    const url = `${this.ACCOUNTS_URL}${this.FORMAT_URL}`;
 
     if (params.state === nonce) {
       this.http

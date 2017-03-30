@@ -6,5 +6,11 @@ export interface PullRequest {
   comments: number,
   id: number,
   from: string,
-  to: string
+  to: string,
+  from_repo_id: number,
+  from_repo_name: string,
+  to_repo_id: number,
+  to_repo_name: string,
+  type: string,
+  updated: string
 }
