@@ -1,4 +1,5 @@
 export interface PullRequest {
+  title: string;
   description: string,
   username: string,
   date: string,
