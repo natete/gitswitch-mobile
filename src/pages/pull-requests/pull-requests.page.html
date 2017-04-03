@@ -38,21 +38,17 @@
           </ion-row>
 
           <ion-row color="primary" class="color-primary">
-            <ion-col col-8 col-sm class="text-ellipsis">
+            <ion-col col-12 col-sm class="text-ellipsis">
+              <ion-icon name="book" item-left></ion-icon>
+              {{pullRequest.from_repo_name}}
+            </ion-col>
+            <ion-col col-6 col-sm class="text-ellipsis">
               <ion-icon name="contact" item-left></ion-icon>
               {{pullRequest.username}}
             </ion-col>
-            <ion-col col-4 col-sm>
-              <ion-icon name="git-commit" item-left></ion-icon>
-              {{pullRequest.commits}}
-            </ion-col>
-            <ion-col col-8 col-sm class="text-ellipsis">
+            <ion-col col-6 col-sm class="text-ellipsis">
               <ion-icon ios="ios-time-outline" md="md-time" item-left></ion-icon>
               {{pullRequest.date}}
-            </ion-col>
-            <ion-col col-4 col-sm>
-              <ion-icon name="chatboxes" item-left></ion-icon>
-              {{pullRequest.comments}}
             </ion-col>
           </ion-row>
 
