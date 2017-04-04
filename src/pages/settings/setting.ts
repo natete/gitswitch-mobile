@@ -1,7 +1,8 @@
 export interface Setting {
-  id: number,
-  name: string,
-  fork: boolean,
-  alert: number,
-  time: string
+  id: number;
+  name: string;
+  username: string;
+  fork: boolean;
+  alert: number;
+  date: string;
 }

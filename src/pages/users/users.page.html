@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-navbar color="light">
+    <ion-buttons left>
+      <button ion-button (click)="goToSettings()">
+        <span ion-text color="primary">Accept</span>
+      </button>
+    </ion-buttons>
+    <ion-title>User</ion-title>
+    <ion-buttons right>
+      <button ion-button (click)="dismiss()">
+        <span ion-text color="primary">Cancel</span>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item *ngIf="user">
+    <ion-avatar item-left>
+      <img src="{{user.photoUrl}}">
+    </ion-avatar>
+    <h2>{{user.username}}</h2>
+    <p>{{user.fullname}}</p>
+    <p>{{user.email}}</p>
+  </ion-item>
+</ion-content>
