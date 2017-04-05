@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { ViewController, NavParams, Platform, NavController, LoadingController } from 'ionic-angular';
-import { SettingsPage } from '../settings/settings.page';
+import { NavParams, NavController, LoadingController } from 'ionic-angular';
 import { User } from './user';
 import { UsersService } from './users.service';
+import { CollaboratorsPage } from '../collaborators/collaborators.page';
 
 /*
  Generated class for the Users page.
@@ -16,45 +16,51 @@ import { UsersService } from './users.service';
 })
 export class UsersPage {
 
-  collaborator: string = "";
-  user: User;
+  action: string;
+  users: User[] = [];
+  username: string;
+  addedUser: string;
+  selectUser: User;
 
   constructor(private navCtrl: NavController,
-              private platform: Platform,
               private navParams: NavParams,
-              private viewCtrl: ViewController,
               private usersService: UsersService,
-              private loadingController: LoadingController) {
+              private loadingController: LoadingController) {}
 
-  }
+  confirmUser(username) {
+    if (username) {
+      const loader = this.loadingController.create({
+        content: 'Getting users...'
+      });
 
-  ionViewDidLoad() {
-    const loader = this.loadingController.create({
-      content: 'Getting settings...'
-    });
+      loader.present();
 
-    loader.present();
+      this.addedUser = username;
 
-    this.usersService
-        .getUsers()
-        .subscribe(users => {
-          this.user = users[0];
-          loader
-            .dismiss()
-            .catch(() => console.log('Already dismissed'));
-        });
-
-    if (this.navParams.data.collaborator) {
-      this.collaborator = this.navParams.data.collaborator;
+      this.usersService
+          .getUser(this.addedUser)
+          .filter(user => !!user)
+          .subscribe(user => {
+            this.users.push(user);
+            loader
+              .dismiss()
+              .catch(() => console.log('Already dismissed'));
+          });
     }
   }
 
-  goToSettings() {
-    this.navCtrl.push(SettingsPage, { collaborator: this.collaborator });
+  deleteUser() {
+    this.addedUser = '';
+    this.username = '';
+    this.users.pop();
   }
 
-  dismiss() {
-    this.viewCtrl.dismiss();
+  userSelected(user: User) {
+    this.navCtrl.push(CollaboratorsPage, {
+      collaborator: user,
+      action: this.navParams.data.action,
+      repositories: this.navParams.data.repositories
+    });
   }
 
 }

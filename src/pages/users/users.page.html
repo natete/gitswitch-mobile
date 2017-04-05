@@ -1,26 +1,34 @@
 <ion-header>
   <ion-navbar color="light">
-    <ion-buttons left>
-      <button ion-button (click)="goToSettings()">
-        <span ion-text color="primary">Accept</span>
-      </button>
-    </ion-buttons>
     <ion-title>User</ion-title>
-    <ion-buttons right>
-      <button ion-button (click)="dismiss()">
-        <span ion-text color="primary">Cancel</span>
-      </button>
-    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-item *ngIf="user">
-    <ion-avatar item-left>
-      <img src="{{user.photoUrl}}">
-    </ion-avatar>
-    <h2>{{user.username}}</h2>
-    <p>{{user.fullname}}</p>
-    <p>{{user.email}}</p>
+  <ion-item *ngIf="!addedUser" color="dark">
+    <ion-label><strong color="primary">Username:</strong></ion-label>
+    <ion-input class="color-light" [(ngModel)]="username" type="text"></ion-input>
+    <button ion-button icon-only item-right (click)="confirmUser(username)">
+      <ion-icon color="light" name="person-add"></ion-icon>
+    </button>
   </ion-item>
+
+  <ion-item *ngIf="addedUser" color="dark">
+    <ion-icon name="person" item-left color="light"></ion-icon>
+    <strong color="light">{{addedUser}}</strong>
+    <button ion-button icon-only item-right (click)="deleteUser()">
+      <ion-icon color="light" name="close"></ion-icon>
+    </button>
+  </ion-item>
+
+  <ion-list [virtualScroll]="users" approxItemHeight="108px">
+    <button ion-item *virtualItem="let user" color="light" margin-bottom (click)="userSelected(user)">
+      <ion-avatar item-left>
+        <img src="{{user.photoUrl}}">
+      </ion-avatar>
+      <h2>{{user.username}}</h2>
+      <p>{{user.fullname}}</p>
+      <p>{{user.email}}</p>
+    </button>
+  </ion-list>
 </ion-content>

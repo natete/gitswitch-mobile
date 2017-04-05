@@ -1,4 +1,4 @@
-export interface Setting {
+export interface Repository {
   id: number;
   name: string;
   username: string;

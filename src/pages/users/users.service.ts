@@ -16,14 +16,10 @@ export class UsersService {
    * Get the observable of the user.
    * @returns {Observable<T>} the observable of the user.
    */
-  getUsers(): Observable<User[]> {
-    if (this.settingsStream.getValue()) {
-      this.http
-          .get('api/users')
-          .map(response => response.json().data as User[])
-          .subscribe(user => this.settingsStream.next(user));
-    }
-
-    return this.settingsStream.asObservable();
+  getUser(username: string): Observable<User> {
+    return this.http
+               .get(`api/users/1`)
+               .map(response => response.json().data as User);
+    //.get(`api/users/${username}`)
   }
 }

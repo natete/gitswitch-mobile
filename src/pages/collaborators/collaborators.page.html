@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title *ngIf="user">{{user.username}}</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="goToRepositories()">
+        <span ion-text color="primary">Cancel</span>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-list [virtualScroll]="repositories" approxItemHeight="108px">
+    <ion-item *virtualItem="let repository" color="light" margin-bottom>
+      <ion-icon class="large-icon" item-left [name]="repository.fork ? 'git-network' : 'book'"></ion-icon>
+
+      <div class="item-content">
+        <h2 class="text-ellipsis">
+          <strong>{{repository.name}}</strong>
+        </h2>
+        <ion-row class="color-primary">
+          <ion-col col-4 class="setting-info-container">
+            <ion-icon item-left name="ios-alert-outline"></ion-icon>
+            {{repository.alert}}
+          </ion-col>
+          <ion-col col-8 class="setting-info-container text-ellipsis">
+            <ion-icon item-left ios="ios-time-outline" md="md-time"></ion-icon>
+            {{repository.date}}
+          </ion-col>
+        </ion-row>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <button ion-button block icon-left (click)="actionsCollaborator()">
+    <ion-icon color="light" name="person"></ion-icon>
+    <strong color="light">{{action}} collaborator</strong>
+  </button>
+
+</ion-content>
+
+
+<!--<ion-checkbox red item-right [(ngModel)]="repository.checked"
+              (ionChange)="AddRemoveRepository(repository);">
+</ion-checkbox>-->

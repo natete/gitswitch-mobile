@@ -1,4 +1,4 @@
-page-settings {
+page-repositories {
   .item-content {
 
     .setting-info-container {
@@ -28,16 +28,4 @@ page-settings {
   .large-icon{
     font-size: 4rem;
   }
-
-  .item-md.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
-    border-bottom-color: map-get($colors, primary);
-    box-shadow: inset 0 -1px 0 0 map-get($colors, primary);
-  }
-
-  .color-light {
-    * {
-      color: map-get($colors, light);
-    }
-  }
-
 }

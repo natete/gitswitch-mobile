@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { NavParams, LoadingController, NavController } from 'ionic-angular';
-import { Setting } from '../settings/setting';
+import { Repository } from '../repositories/repository';
 import { RepositorySetting } from './repository-setting';
 import { RepositorySettingsService } from './repository-settings.service';
-import { SettingsPage } from '../settings/settings.page';
+import { RepositoriesPage } from '../repositories/repositories.page';
 
 /*
   Generated class for the RepositorySettings page.
@@ -17,7 +17,7 @@ import { SettingsPage } from '../settings/settings.page';
 })
 export class RepositorySettingsPage {
 
-  setting: Setting;
+  repository: Repository;
   repositorySetting: RepositorySetting;
 
   constructor(private navCtrl: NavController,
@@ -28,7 +28,7 @@ export class RepositorySettingsPage {
   }
 
   ionViewDidLoad() {
-    this.setting = this.navParams.data;
+    this.repository = this.navParams.data;
 
     const loader = this.loadingController.create({
       content: 'Getting repository setting...'
@@ -37,7 +37,7 @@ export class RepositorySettingsPage {
     loader.present();
 
     this.repositorySettingsService
-        .getRepositorySettings(this.setting.id)
+        .getRepositorySettings(this.repository.id)
         .filter(repoSettings => !!repoSettings)
         .subscribe(repositorySetting => {
           this.repositorySetting = repositorySetting;
@@ -52,7 +52,7 @@ export class RepositorySettingsPage {
   }
 
   private goToSettings(){
-    this.navCtrl.push(SettingsPage);
+    this.navCtrl.push(RepositoriesPage);
   }
 
 }
