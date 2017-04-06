@@ -5,4 +5,5 @@ export interface Repository {
   fork: boolean;
   alert: number;
   date: string;
+  accounts: [{ id: number, hasPermission: boolean }];
 }

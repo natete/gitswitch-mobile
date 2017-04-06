@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoadingController, NavController } from 'ionic-angular';
+import { LoadingController, NavController, ToastController } from 'ionic-angular';
 import { Repository } from './repository';
 import { RepositoriesService } from './repositories.service';
 import { RepositorySettingsPage } from '../repository-settings/repository-settings.page';
@@ -21,7 +21,8 @@ export class RepositoriesPage {
 
   constructor(private navCtrl: NavController,
               private loadingController: LoadingController,
-              private repositoriesService: RepositoriesService) {}
+              private repositoriesService: RepositoriesService,
+              private toastCtrl: ToastController) {}
 
   ionViewDidLoad() {
     const loader = this.loadingController.create({
@@ -45,6 +46,21 @@ export class RepositoriesPage {
   }
 
   goToUsers(action: string) {
-    this.navCtrl.push(UsersPage, { action: action, repositories: this.repositories });
+    if (this.repositories.length != 0) {
+      this.navCtrl.push(UsersPage, { action: action, repositories: this.repositories });
+    }
+    else {
+      let toast = this.toastCtrl.create({
+        message: 'You must have at least one repository',
+        duration: 3000,
+        position: 'pop'
+      });
+
+      toast.onDidDismiss(() => {
+        console.log('Dismissed toast');
+      });
+
+      toast.present();
+    }
   }
 }

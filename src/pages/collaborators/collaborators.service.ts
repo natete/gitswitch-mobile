@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Collaborator } from './collaborator';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Repository } from '../repositories/repository';
 
 @Injectable()
 export class CollaboratorsService {
@@ -25,14 +26,36 @@ export class CollaboratorsService {
     return this.collaboratorsStream.asObservable();
   }
 
-  addCollaborator(username: string, repos: string[]): void {
-    const url = `api/collaborators/${username}/${repos}`;
+  /**
+   * Add it from the list of collaborators the repository has.
+   * @param repos array with the data of repositories where the user isn't collaborator.
+   * @param username to add user as a collaborator.
+   */
+  addCollaborator(repos: Repository[], username: string): void {
+    const url = `api/collaborators/${repos}/${username}`;
     //this.http.
   }
 
-  deleteCollaborator(username: string, repos: string[]): void {
-    const url = `api/collaborators/${username}/${repos}`;
+  /**
+   * Removes it from the list of collaborators the repository has.
+   * @param repos array with the data of repositories where the user has.
+   * @param username to remove user as a collaborator.
+   */
+  deleteCollaborator(repos: Repository[], username: string): void {
+    const url = `api/collaborators/${repos}/${username}`;
     //this.http.
+  }
+
+  /**
+   * Check if a user is a collaborator in this repository.
+   * @param owner the owner of repository.
+   * @param repo is the name of repository where checked if a user is a collaborator.
+   * @param username to check if a user is a collaborator.
+   */
+  checkIsCollaborator(owner: string, repo: string, username: string): boolean {
+    const url = `api/collaborators/${owner}/${repo}/${username}`;
+    //this.http.
+    return true;
   }
 
 }

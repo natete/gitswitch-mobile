@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavParams, NavController, LoadingController } from 'ionic-angular';
+import { NavParams, NavController, LoadingController, ToastController } from 'ionic-angular';
 import { User } from './user';
 import { UsersService } from './users.service';
 import { CollaboratorsPage } from '../collaborators/collaborators.page';
@@ -25,7 +25,8 @@ export class UsersPage {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private usersService: UsersService,
-              private loadingController: LoadingController) {}
+              private loadingController: LoadingController,
+              private toastCtrl: ToastController) {}
 
   confirmUser(username) {
     if (username) {
@@ -35,13 +36,12 @@ export class UsersPage {
 
       loader.present();
 
-      this.addedUser = username;
-
       this.usersService
           .getUser(this.addedUser)
           .filter(user => !!user)
           .subscribe(user => {
             this.users.push(user);
+            this.addedUser = username;
             loader
               .dismiss()
               .catch(() => console.log('Already dismissed'));

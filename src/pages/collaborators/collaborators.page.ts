@@ -12,11 +12,15 @@ import { Collaborator } from './collaborator';
 })
 export class CollaboratorsPage {
 
+  private readonly ADD_TEXT = 'add';
+  private readonly DELETE_TEXT = 'delete';
+
+
   user: User;
   repositories: Repository[];
-  reposChecked: string[] = [];
+  reposChecked: Repository[] = [];
   action: string;
-  reposFiltered: Repository[];
+  reposFiltered: Repository[] = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -32,7 +36,21 @@ export class CollaboratorsPage {
     this.repositories = this.navParams.data.repositories;
     this.action = this.navParams.data.action;
 
-    //this.reposFiltered = getRepositoriesFiltered();
+    this.getRepositoriesFiltered();
+
+    if (this.reposFiltered.length == 0) {
+      let toast = this.toastCtrl.create({
+        message: `You can not ${this.action} collaborator in any repository`,
+        duration: 3000,
+        position: 'pop'
+      });
+
+      toast.onDidDismiss(() => {
+        console.log('Dismissed toast');
+      });
+
+      toast.present();
+    }
 
   }
 
@@ -71,8 +89,42 @@ export class CollaboratorsPage {
     }
   }
 
+  /**
+   * Filter the repositories if it has a permissions, for add it must not has the username as collaborator and for
+   * delete it must has the username as collaborator.
+   */
   getRepositoriesFiltered() {
+    let isCollaborator = false;
+    for (let i = 0; i < this.repositories.length; i++) {
+      let repository = this.repositories[i];
+      isCollaborator = this.collaboratorsService.checkIsCollaborator(repository.username, repository.name, this.user.username);
 
+      if (isCollaborator && this.action === this.DELETE_TEXT) {
+        if (this.checkPermissions(repository)) {
+          this.reposFiltered.push(repository);
+        }
+      } else if (!isCollaborator && this.action === this.ADD_TEXT) {
+        if (this.checkPermissions(repository)) {
+          this.reposFiltered.push(repository);
+        }
+      }
+    }
+  }
+
+  /**
+   * Check to if least an account has permission to add or delete collaborator in the repository.
+   * @param repository the repository to check.
+   */
+  private checkPermissions(repository: Repository): boolean {
+    let permissions = repository.accounts;
+    let found = false;
+    for (let i = 0; i < permissions.length && !found; i++) {
+      if (permissions[i].hasPermission) {
+        found = true;
+      }
+    }
+
+    return found;
   }
 
   /**
@@ -80,18 +132,18 @@ export class CollaboratorsPage {
    * @param collaborator the username to be added to the repositories.
    * @param respos The repositories to add or delete user as a collaborator.
    */
-  private proceedActionCollaborator(user: User, repos: string[], action: string): void {
+  private proceedActionCollaborator(user: User, repos: Repository[], action: string): void {
     const confirm = this.alertCtrl.create({
-      title: `${action} account`,
-      message: `Are you sure you want to ${action} the user as a colaborator in the selected repositories?`,
+      title: `${action} collaborator`,
+      message: `Are you sure you want to ${action} the user as a collaborator in the selected repositories?`,
       buttons: [
         { text: 'Cancel' },
         {
           text: 'Yes', handler: () => {
           if (action === 'add') {
-            this.collaboratorsService.addCollaborator(user.username, repos);
+            this.collaboratorsService.addCollaborator(repos, user.username);
           } else {
-            this.collaboratorsService.deleteCollaborator(user.username, repos);
+            this.collaboratorsService.deleteCollaborator(repos, user.username);
           }
         }
         }
