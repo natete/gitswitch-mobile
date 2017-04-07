@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { Repository } from './repository';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Http } from '@angular/http';
+import { Constants } from '../../shared/constants';
 
 @Injectable()
 export class RepositoriesService {
-  private readonly SETTINGS_URL = 'api/simple_git/repositories';
+  private readonly REPOSITORIES_URL = `${Constants.BACKEND_URL}/api/simple_git/repository`;
+  private readonly FORMAT_URL = '?_format=json';
 
   private repositoriesStream = new BehaviorSubject<Repository[]>([]);
 
@@ -18,11 +20,8 @@ export class RepositoriesService {
   getRepositories(): Observable<Repository[]> {
     if (this.repositoriesStream.getValue()) {
       this.http
-          //.get(`${Constants.BACKEND_URL}/${this.SETTINGS_URL}`)
-          //.subscribe((setting: any) => this.settingsStream.next(setting as Repository[]));
-          .get('api/repositories')
-          .map(response => response.json().data as Repository[])
-          .subscribe(repository => this.repositoriesStream.next(repository));
+          .get(`${this.REPOSITORIES_URL}/all${this.FORMAT_URL}`)
+          .subscribe((repository: any) => this.repositoriesStream.next(repository as Repository[]));
     }
 
     return this.repositoriesStream.asObservable();

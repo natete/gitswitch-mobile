@@ -57,10 +57,10 @@ export class CollaboratorsPage {
     this.navCtrl.push(RepositoriesPage);
   }
 
-  getCollaborators(repo: Repository): Collaborator[] {
+  getCollaborators(repository: Repository): Collaborator[] {
     let result: Collaborator[];
     this.collaboratorsService
-        .getCollaborators(repo)
+        .getCollaborators(repository)
         .subscribe(collaborators => {
           result = collaborators;
         });
@@ -105,8 +105,7 @@ export class CollaboratorsPage {
   getRepositoriesFiltered() {
     let isCollaborator = false;
     for (let repo of this.repositories) {
-      isCollaborator = this.collaboratorsService.checkIsCollaborator(repo, this.user.username);
-
+      isCollaborator = this.collaboratorsService.checkIsCollaborator(repo.accounts[0].id, repo, this.user.username);
       if (isCollaborator && this.action === this.DELETE_TEXT) {
         this.checkPermissions(repo);
       } else if (!isCollaborator && this.action === this.ADD_TEXT) {
@@ -133,10 +132,11 @@ export class CollaboratorsPage {
 
   /**
    * Add or delete the given collaborator.
-   * @param collaborator the username to be added to the repositories.
-   * @param respos The repositories to add or delete user as a collaborator.
+   * @param user the user to be added to the repositories.
+   * @param respositories The repositories to add or delete user as a collaborator.
+   * @param action the action, add or delete the user as a collaborator.
    */
-  private proceedActionCollaborator(user: User, repos: Repository[], action: string): void {
+  private proceedActionCollaborator(user: User, repositories: Repository[], action: string): void {
     const confirm = this.alertCtrl.create({
       title: `${action} collaborator`,
       message: `Are you sure you want to ${action} the user as a collaborator in the selected repositories?`,
@@ -144,10 +144,12 @@ export class CollaboratorsPage {
         { text: 'Cancel' },
         {
           text: 'Yes', handler: () => {
-          if (action === 'add') {
-            this.collaboratorsService.addCollaborator(repos, user.username);
-          } else {
-            this.collaboratorsService.deleteCollaborator(repos, user.username);
+          for (let repository of repositories) {
+            if (action === 'add') {
+              this.collaboratorsService.addCollaborator(repository.accounts[0].id, repository, user.username);
+            } else {
+              this.collaboratorsService.deleteCollaborator(repository.accounts[0].id, repository, user.username);
+            }
           }
         }
         }

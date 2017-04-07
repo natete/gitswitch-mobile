@@ -28,33 +28,38 @@ export class CollaboratorsService {
 
   /**
    * Add it from the list of collaborators the repository has.
+   * @params accountId the id of account has permissions.
    * @param repos array with the data of repositories where the user isn't collaborator.
-   * @param username to add user as a collaborator.
+   * @param username username to add user as a collaborator.
    */
-  addCollaborator(repos: Repository[], username: string): void {
-    const url = `api/collaborators/${repos}/${username}`;
-    //this.http.
+  addCollaborator(accountId: number, repository: Repository, username: string): void {
+    const url = `api/collaborators/${repository}/${username}`;
+    //this.http
+    //.post(url);
   }
 
   /**
    * Removes it from the list of collaborators the repository has.
-   * @param repos array with the data of repositories where the user has.
-   * @param username to remove user as a collaborator.
+   * @params accountId the id of account has permissions.
+   * @param repository array with the data of repositories where the user has.
+   * @param username username to remove user as a collaborator.
    */
-  deleteCollaborator(repos: Repository[], username: string): void {
-    const url = `api/collaborators/${repos}/${username}`;
-    //this.http.
+  deleteCollaborator(accountId: number, repository: Repository, username: string): void {
+    const url = `api/collaborators/${repository}/${username}`;
+    //this.http
+    //   .delete(url);
   }
 
   /**
    * Check if a user is a collaborator in this repository.
-   * @param owner the owner of repository.
-   * @param repo is the name of repository where checked if a user is a collaborator.
-   * @param username to check if a user is a collaborator.
+   * @params accountId the id of account has permissions..
+   * @param repository array with the data of repository where checked if a user is a collaborator.
+   * @param username username to check if a user is a collaborator.
    */
-  checkIsCollaborator(repos: Repository, username: string): boolean {
-    const url = `api/collaborators/${repos}/${username}`;
-    //this.http.
+  checkIsCollaborator(accountId: number, repository: Repository, username: string): boolean {
+    const url = `api/collaborators/${repository}/${username}`;
+    //return this.http
+
     return true;
   }
 

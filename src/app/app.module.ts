@@ -12,12 +12,10 @@ import { AuthService } from '../providers/auth/auth.service';
 import { TokenService } from '../providers/auth/token.service';
 import { HttpFactory } from '../providers/http/http.factory';
 import { AccountsService } from '../pages/accounts/accounts.service';
-import { InMemoryDataService } from '../assets/database/in-memory-data.service';
 import { PullRequestsService } from '../pages/pull-requests/pull-requests.service';
 import { RepositoriesService } from '../pages/repositories/repositories.service';
 import { RepositorySettingsPage } from '../pages/repository-settings/repository-settings.page';
 import { RepositorySettingsService } from '../pages/repository-settings/repository-settings.service';
-import { InMemoryWebApiModule, InMemoryBackendConfigArgs } from 'angular-in-memory-web-api';
 import { UsersService } from '../pages/users/users.service';
 import { CollaboratorsPage } from '../pages/collaborators/collaborators.page';
 import { CollaboratorsService } from '../pages/collaborators/collaborators.service';
@@ -35,11 +33,7 @@ import { CollaboratorsService } from '../pages/collaborators/collaborators.servi
     CollaboratorsPage
   ],
   imports: [
-    IonicModule.forRoot(MyApp),
-    InMemoryWebApiModule.forRoot(InMemoryDataService, {
-      host: 'localhost',
-      passThruUnknownUrl: true
-    } as InMemoryBackendConfigArgs)
+    IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
