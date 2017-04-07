@@ -25,9 +25,15 @@
             <ion-icon item-left name="ios-alert-outline"></ion-icon>
             {{repository.alert}}
           </ion-col>
-          <ion-col col-8 class="setting-info-container text-ellipsis">
+          <ion-col col-4 class="setting-info-container text-ellipsis">
             <ion-icon item-left ios="ios-time-outline" md="md-time"></ion-icon>
             {{repository.date}}
+          </ion-col>
+          <ion-col col-4>
+            <ion-item color="light">
+              <ion-checkbox (ionChange)="checkRepository(repository);">
+              </ion-checkbox>
+            </ion-item>
           </ion-col>
         </ion-row>
       </div>
@@ -40,8 +46,3 @@
   </button>
 
 </ion-content>
-
-
-<!--<ion-checkbox red item-right [(ngModel)]="repository.checked"
-              (ionChange)="AddRemoveRepository(repository);">
-</ion-checkbox>-->

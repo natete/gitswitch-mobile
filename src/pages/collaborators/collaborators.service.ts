@@ -15,10 +15,10 @@ export class CollaboratorsService {
    * Get the observable of the collaborators the repository has.
    * @returns {Observable<T>} the observable of collaborators the repository has.
    */
-  getCollaborators(repo: string, owner: string): Observable<Collaborator[]> {
+  getCollaborators(repos: Repository): Observable<Collaborator[]> {
     if (this.collaboratorsStream.getValue()) {
       this.http
-          .get(`api/collaborators/${owner}/${repo}`)
+          .get(`api/collaborators/${repos}`)
           .map(response => response.json().data as Collaborator[])
           .subscribe(collaborator => this.collaboratorsStream.next(collaborator));
     }
@@ -52,8 +52,8 @@ export class CollaboratorsService {
    * @param repo is the name of repository where checked if a user is a collaborator.
    * @param username to check if a user is a collaborator.
    */
-  checkIsCollaborator(owner: string, repo: string, username: string): boolean {
-    const url = `api/collaborators/${owner}/${repo}/${username}`;
+  checkIsCollaborator(repos: Repository, username: string): boolean {
+    const url = `api/collaborators/${repos}/${username}`;
     //this.http.
     return true;
   }

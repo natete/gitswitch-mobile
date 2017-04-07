@@ -18,7 +18,6 @@ export class CollaboratorsPage {
 
   user: User;
   repositories: Repository[];
-  reposChecked: Repository[] = [];
   action: string;
   reposFiltered: Repository[] = [];
 
@@ -61,7 +60,7 @@ export class CollaboratorsPage {
   getCollaborators(repo: Repository): Collaborator[] {
     let result: Collaborator[];
     this.collaboratorsService
-        .getCollaborators(repo.name, repo.username)
+        .getCollaborators(repo)
         .subscribe(collaborators => {
           result = collaborators;
         });
@@ -69,10 +68,20 @@ export class CollaboratorsPage {
     return result;
   }
 
+  checkRepository(repository) {
+    repository.checked = !repository.checked;
+  }
+
   actionsCollaborator() {
     if (this.user) {
-      if (this.reposChecked.length != 0) {
-        this.proceedActionCollaborator(this.user, this.reposChecked, this.action);
+      let reposChecked: Repository[] = [];
+      for (let repo of this.reposFiltered) {
+        if (repo.checked) {
+          reposChecked.push(repo);
+        }
+      }
+      if (reposChecked.length != 0) {
+        this.proceedActionCollaborator(this.user, reposChecked, this.action);
       } else {
         let toast = this.toastCtrl.create({
           message: 'You must select at least one repository',
@@ -95,18 +104,13 @@ export class CollaboratorsPage {
    */
   getRepositoriesFiltered() {
     let isCollaborator = false;
-    for (let i = 0; i < this.repositories.length; i++) {
-      let repository = this.repositories[i];
-      isCollaborator = this.collaboratorsService.checkIsCollaborator(repository.username, repository.name, this.user.username);
+    for (let repo of this.repositories) {
+      isCollaborator = this.collaboratorsService.checkIsCollaborator(repo, this.user.username);
 
       if (isCollaborator && this.action === this.DELETE_TEXT) {
-        if (this.checkPermissions(repository)) {
-          this.reposFiltered.push(repository);
-        }
+        this.checkPermissions(repo);
       } else if (!isCollaborator && this.action === this.ADD_TEXT) {
-        if (this.checkPermissions(repository)) {
-          this.reposFiltered.push(repository);
-        }
+        this.checkPermissions(repo);
       }
     }
   }
@@ -115,16 +119,16 @@ export class CollaboratorsPage {
    * Check to if least an account has permission to add or delete collaborator in the repository.
    * @param repository the repository to check.
    */
-  private checkPermissions(repository: Repository): boolean {
+  private checkPermissions(repository: Repository): void {
     let permissions = repository.accounts;
     let found = false;
-    for (let i = 0; i < permissions.length && !found; i++) {
-      if (permissions[i].hasPermission) {
+    for (let permission of permissions) {
+      if (permission.hasPermission) {
         found = true;
+        repository.accounts = [{ id: permission.id, hasPermission: permission.hasPermission }];
+        this.reposFiltered.push(repository);
       }
     }
-
-    return found;
   }
 
   /**
