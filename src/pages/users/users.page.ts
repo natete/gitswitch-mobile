@@ -17,7 +17,7 @@ import { CollaboratorsPage } from '../collaborators/collaborators.page';
 export class UsersPage {
 
   action: string;
-  users: User[] = [];
+  users: User[];
   username: string;
   addedUser: string;
 
@@ -35,10 +35,9 @@ export class UsersPage {
       loader.present();
 
       this.usersService
-          .getUser(username)
-          .filter(user => !!user)
-          .subscribe(user => {
-            this.users.push(user);
+          .getUsers(username)
+          .subscribe(users => {
+            this.users = users;
             this.addedUser = username;
             loader
               .dismiss()

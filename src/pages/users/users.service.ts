@@ -17,12 +17,16 @@ export class UsersService {
   constructor(private http: Http) {}
 
   /**
-   * Get the observable of the user.
-   * @returns {Observable<T>} the observable of the user.
+   * Get the observable of the users.
+   * @returns {Observable<T>} the observable of the users.
    */
-  getUser(username: string): Observable<User> {
-    return this.http
-               .get(`${this.USERS_URL}/all/${username}${this.FORMAT_URL}`)
-               .map((response: any) => response as User);
+  getUsers(username: string): Observable<User[]> {
+    if (this.usersStream.getValue()) {
+      this.http
+          .get(`${this.USERS_URL}/all/${username}${this.FORMAT_URL}`)
+          .subscribe((user: any) => this.usersStream.next(user as User[]));
+    }
+
+    return this.usersStream.asObservable();
   }
 }

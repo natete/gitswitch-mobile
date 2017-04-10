@@ -104,15 +104,7 @@ export class CollaboratorsPage {
    */
   getRepositoriesFiltered() {
     for (let repo of this.repositories) {
-      repo = this.checkPermissions(repo);
-      this.collaboratorsService.checkIsCollaborator(repo.account[0].account_id, repo.name, this.user.username)
-          .subscribe(isCollaborator => {
-            if (isCollaborator && this.action === this.DELETE_TEXT) {
-              this.reposFiltered.push(repo);
-            } else if (!isCollaborator && this.action === this.ADD_TEXT) {
-              this.reposFiltered.push(repo);
-            }
-          });
+      this.checkPermissions(repo);
     }
   }
 
@@ -120,16 +112,31 @@ export class CollaboratorsPage {
    * Check to if least an account has permission to add or delete collaborator in the repository.
    * @param repository the repository to check.
    */
-  private checkPermissions(repository: Repository): Repository {
+  private checkPermissions(repository: Repository): void {
     let permissions = repository.account;
-    let found = false;
     for (let permission of permissions) {
       if (permission.canAdmin) {
-        found = true;
         repository.account = [{ account_id: permission.account_id, canAdmin: permission.canAdmin }];
+        this.checkIsCollaborator(repository);
+        break;
       }
     }
-    return repository;
+  }
+
+  /**
+   * Check to if the user is a collaborator to add repository in the list of repositories by action: add (the user
+   * mustn't be collaborator) or delete(the user must be collaborator)).
+   * @param repository the repository to check.
+   */
+  private checkIsCollaborator(repository: Repository): void {
+    this.collaboratorsService.checkIsCollaborator(repository.account[0].account_id, repository.name, this.user.username)
+        .subscribe(isCollaborator => {
+          if (isCollaborator && this.action === this.DELETE_TEXT) {
+            this.reposFiltered.push(repository);
+          } else if (!isCollaborator && this.action === this.ADD_TEXT) {
+            this.reposFiltered.push(repository);
+          }
+        });
   }
 
   /**
