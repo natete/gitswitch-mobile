@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavParams, NavController, LoadingController, ToastController } from 'ionic-angular';
+import { NavParams, NavController, LoadingController } from 'ionic-angular';
 import { User } from './user';
 import { UsersService } from './users.service';
 import { CollaboratorsPage } from '../collaborators/collaborators.page';
@@ -20,13 +20,11 @@ export class UsersPage {
   users: User[] = [];
   username: string;
   addedUser: string;
-  selectUser: User;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private usersService: UsersService,
-              private loadingController: LoadingController,
-              private toastCtrl: ToastController) {}
+              private loadingController: LoadingController) {}
 
   confirmUser(username) {
     if (username) {
@@ -37,7 +35,7 @@ export class UsersPage {
       loader.present();
 
       this.usersService
-          .getUser(this.addedUser)
+          .getUser(username)
           .filter(user => !!user)
           .subscribe(user => {
             this.users.push(user);

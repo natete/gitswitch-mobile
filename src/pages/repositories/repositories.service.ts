@@ -20,7 +20,7 @@ export class RepositoriesService {
   getRepositories(): Observable<Repository[]> {
     if (this.repositoriesStream.getValue()) {
       this.http
-          .get(`${this.REPOSITORIES_URL}/all${this.FORMAT_URL}`)
+          .get(`${this.REPOSITORIES_URL}/all/all${this.FORMAT_URL}`)
           .subscribe((repository: any) => this.repositoriesStream.next(repository as Repository[]));
     }
 

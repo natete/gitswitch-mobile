@@ -103,14 +103,16 @@ export class CollaboratorsPage {
    * delete it must has the username as collaborator.
    */
   getRepositoriesFiltered() {
-    let isCollaborator = false;
     for (let repo of this.repositories) {
-      isCollaborator = this.collaboratorsService.checkIsCollaborator(repo.accounts[0].id, repo, this.user.username);
-      if (isCollaborator && this.action === this.DELETE_TEXT) {
-        this.checkPermissions(repo);
-      } else if (!isCollaborator && this.action === this.ADD_TEXT) {
-        this.checkPermissions(repo);
-      }
+      repo = this.checkPermissions(repo);
+      this.collaboratorsService.checkIsCollaborator(repo.account[0].account_id, repo.name, this.user.username)
+          .subscribe(isCollaborator => {
+            if (isCollaborator && this.action === this.DELETE_TEXT) {
+              this.reposFiltered.push(repo);
+            } else if (!isCollaborator && this.action === this.ADD_TEXT) {
+              this.reposFiltered.push(repo);
+            }
+          });
     }
   }
 
@@ -118,16 +120,16 @@ export class CollaboratorsPage {
    * Check to if least an account has permission to add or delete collaborator in the repository.
    * @param repository the repository to check.
    */
-  private checkPermissions(repository: Repository): void {
-    let permissions = repository.accounts;
+  private checkPermissions(repository: Repository): Repository {
+    let permissions = repository.account;
     let found = false;
     for (let permission of permissions) {
-      if (permission.hasPermission) {
+      if (permission.canAdmin) {
         found = true;
-        repository.accounts = [{ id: permission.id, hasPermission: permission.hasPermission }];
-        this.reposFiltered.push(repository);
+        repository.account = [{ account_id: permission.account_id, canAdmin: permission.canAdmin }];
       }
     }
+    return repository;
   }
 
   /**
@@ -146,9 +148,9 @@ export class CollaboratorsPage {
           text: 'Yes', handler: () => {
           for (let repository of repositories) {
             if (action === 'add') {
-              this.collaboratorsService.addCollaborator(repository.accounts[0].id, repository, user.username);
+              this.collaboratorsService.addCollaborator(repository.account[0].account_id, repository, user.username);
             } else {
-              this.collaboratorsService.deleteCollaborator(repository.accounts[0].id, repository, user.username);
+              this.collaboratorsService.deleteCollaborator(repository.account[0].account_id, repository, user.username);
             }
           }
         }
