@@ -19,10 +19,10 @@ export class CollaboratorsService {
    * @params repository the data of repository
    * @returns {Observable<T>} the observable of collaborators the repository has.
    */
-  getCollaborators(repository: Repository): Observable<Collaborator[]> {
+  getCollaborators(accountId: number, repositoryName: string): Observable<Collaborator[]> {
     if (this.collaboratorsStream.getValue()) {
       this.http
-          .get(`api/collaborators/${repository}`)
+          .get(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}${this.FORMAT_URL}`)
           .map(response => response.json().data as Collaborator[])
           .subscribe(collaborator => this.collaboratorsStream.next(collaborator));
     }

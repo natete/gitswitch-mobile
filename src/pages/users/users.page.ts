@@ -17,7 +17,7 @@ import { CollaboratorsPage } from '../collaborators/collaborators.page';
 export class UsersPage {
 
   action: string;
-  users: User[];
+  users: User[] = [];
   username: string;
   addedUser: string;
 
@@ -49,7 +49,7 @@ export class UsersPage {
   deleteUser() {
     this.addedUser = '';
     this.username = '';
-    this.users.pop();
+    this.users = [];
   }
 
   userSelected(user: User) {

@@ -57,10 +57,10 @@ export class CollaboratorsPage {
     this.navCtrl.push(RepositoriesPage);
   }
 
-  getCollaborators(repository: Repository): Collaborator[] {
+  getCollaborators(accountId: number, repository: Repository): Collaborator[] {
     let result: Collaborator[];
     this.collaboratorsService
-        .getCollaborators(repository)
+        .getCollaborators(accountId, repository.name)
         .subscribe(collaborators => {
           result = collaborators;
         });
@@ -130,10 +130,10 @@ export class CollaboratorsPage {
    */
   private checkIsCollaborator(repository: Repository): void {
     this.collaboratorsService.checkIsCollaborator(repository.account[0].account_id, repository.name, this.user.username)
-        .subscribe(isCollaborator => {
-          if (isCollaborator && this.action === this.DELETE_TEXT) {
+        .subscribe((isCollaborator: any) => {
+          if (isCollaborator.status && this.action === this.DELETE_TEXT) {
             this.reposFiltered.push(repository);
-          } else if (!isCollaborator && this.action === this.ADD_TEXT) {
+          } else if (!isCollaborator.status && this.action === this.ADD_TEXT) {
             this.reposFiltered.push(repository);
           }
         });
