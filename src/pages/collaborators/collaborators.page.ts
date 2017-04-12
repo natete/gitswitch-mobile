@@ -113,10 +113,10 @@ export class CollaboratorsPage {
    * @param repository the repository to check.
    */
   private checkPermissions(repository: Repository): void {
-    let permissions = repository.account;
+    let permissions = repository.accounts;
     for (let permission of permissions) {
       if (permission.canAdmin) {
-        repository.account = [{ account_id: permission.account_id, canAdmin: permission.canAdmin }];
+        repository.accounts = [{ account_id: permission.account_id, canAdmin: permission.canAdmin }];
         this.checkIsCollaborator(repository);
         break;
       }
@@ -129,7 +129,7 @@ export class CollaboratorsPage {
    * @param repository the repository to check.
    */
   private checkIsCollaborator(repository: Repository): void {
-    this.collaboratorsService.checkIsCollaborator(repository.account[0].account_id, repository.name, this.user.username)
+    this.collaboratorsService.checkIsCollaborator(repository.accounts[0].account_id, repository.name, this.user.username)
         .subscribe((isCollaborator: any) => {
           if (isCollaborator.status && this.action === this.DELETE_TEXT) {
             this.reposFiltered.push(repository);
@@ -155,9 +155,9 @@ export class CollaboratorsPage {
           text: 'Yes', handler: () => {
           for (let repository of repositories) {
             if (action === 'add') {
-              this.collaboratorsService.addCollaborator(repository.account[0].account_id, repository, user.username);
+              this.collaboratorsService.addCollaborator(repository.accounts[0].account_id, repository.name, user.username);
             } else {
-              this.collaboratorsService.deleteCollaborator(repository.account[0].account_id, repository, user.username);
+              this.collaboratorsService.deleteCollaborator(repository.accounts[0].account_id, repository.name, user.username);
             }
           }
         }

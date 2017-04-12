@@ -5,7 +5,7 @@ export interface Repository {
   issues: number;
   fork: boolean;
   age: string;
-  account: [{ account_id: number, canAdmin: boolean }];
+  accounts: [{ account_id: number, canAdmin: boolean }];
   checked: boolean;
   language: string;
   updated: string;

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Collaborator } from './collaborator';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Repository } from '../repositories/repository';
 import { Constants } from '../../shared/constants';
 
 @Injectable()
@@ -33,25 +32,33 @@ export class CollaboratorsService {
   /**
    * Add it from the list of collaborators the repository has.
    * @params accountId the id of account has permissions.
-   * @param repository the data of repository where the user isn't collaborator.
+   * @param repositoryName the name of repository where the user isn't collaborator.
    * @param username username to add user as a collaborator.
    */
-  addCollaborator(accountId: number, repository: Repository, username: string): void {
-    const url = `api/collaborators/${repository}/${username}`;
-    //this.http
-    //.post(url);
+  addCollaborator(accountId: number, repositoryName: string, username: string): void {
+    this.http
+        .put(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/${username}${this.FORMAT_URL}`, JSON.stringify({}))
+        .subscribe((collaborator: any) => {
+          const collaborators: Collaborator[] = this.collaboratorsStream.getValue();
+          collaborators.push(collaborator as Collaborator);
+          this.collaboratorsStream.next(collaborators);
+        });
   }
 
   /**
    * Removes it from the list of collaborators the repository has.
    * @params accountId the id of account has permissions.
-   * @param repository the data of repository where the user has.
+   * @param repositoryName the name of repository where the user has.
    * @param username username to remove user as a collaborator.
    */
-  deleteCollaborator(accountId: number, repository: Repository, username: string): void {
-    const url = `api/collaborators/${repository}/${username}`;
-    //this.http
-    //   .delete(url);
+  deleteCollaborator(accountId: number, repositoryName: string, username: string): void {
+    this.http
+        .delete(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/${username}${this.FORMAT_URL}`)
+        .subscribe(() => this.collaboratorsStream.next(
+          this.collaboratorsStream.getValue()
+              .filter((co: Collaborator) => co.username !== username))
+        );
+
   }
 
   /**
@@ -62,9 +69,7 @@ export class CollaboratorsService {
    */
   checkIsCollaborator(accountId: number, repositoryName: string, username: string): Observable<boolean> {
     return this.http.get(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/${username}${this.FORMAT_URL}`)
-               .map((response: any) => response as boolean);
-
-    //return true;
+               .map((response: any) => response);
   }
 
 }
