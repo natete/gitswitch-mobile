@@ -32,7 +32,7 @@ export class AuthService {
    * @param password
    * @returns {Promise<void|void>} That resolves if everything goes fine or it's rejected otherwise.
    */
-  login(username: string, password: string): Promise<boolean> {
+  login(username: string, password: string): Promise<void> {
     const loginEndpoint = 'oauth/token';
     const requestBody = this.buildRequestBody(username, password);
 

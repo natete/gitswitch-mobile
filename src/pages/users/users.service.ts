@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Setting } from './setting';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Http } from '@angular/http';
@@ -18,7 +17,7 @@ export class UsersService {
 
   /**
    * Get the observable of the users.
-   * @returns {Observable<T>} the observable of the users.
+   * @returns {Observable<User[]>} the observable of the users.
    */
   getUsers(username: string): Observable<User[]> {
     if (this.usersStream.getValue()) {

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { NativeStorage } from '@ionic-native/nativestorage';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 @Injectable()
 export class TokenService {
 
-  constructor() { }
+  constructor(private nativeStorage: NativeStorage) { }
 
   /**
    * Saves the token in the native storage.
@@ -13,7 +13,7 @@ export class TokenService {
    * @returns {Promise<any>} with the result of the storage process.
    */
   setToken(token: any): Promise<void> {
-    return NativeStorage.setItem('token', token);
+    return this.nativeStorage.setItem('token', token);
   }
 
   /**
@@ -21,7 +21,7 @@ export class TokenService {
    * @returns {Promise<any>} with the stored token.
    */
   getToken(): Promise<any> {
-    return NativeStorage.getItem('token');
+    return this.nativeStorage.getItem('token');
   }
 
   /**
@@ -29,6 +29,6 @@ export class TokenService {
    * @returns {Promise<any>} with the result of the removal process.
    */
   revokeToken(): Promise<void> {
-    return NativeStorage.remove('token');
+    return this.nativeStorage.remove('token');
   }
 }

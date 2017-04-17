@@ -1,10 +1,10 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Http, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Account } from './account';
-import { InAppBrowser } from '@ionic-native/inappbrowser';
 import { Constants } from '../../shared/constants';
+import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 
 @Injectable()
 export class AccountsService {
@@ -15,7 +15,8 @@ export class AccountsService {
   private accountsStream = new BehaviorSubject<Account[]>([]);
 
   constructor(private http: Http,
-              private zone: NgZone) {}
+              private zone: NgZone,
+              private inAppBrowser: InAppBrowser) {}
 
   /**
    * Get the observable of the accounts the user has.
@@ -43,7 +44,7 @@ export class AccountsService {
 
     const params: URLSearchParams = this.buildParams(redirectUri, nonce);
 
-    const browserRef = new InAppBrowser(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+    const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
 
     browserRef.on('loadstart')
               .filter(event => event.url.indexOf(redirectUri) === 0)
@@ -106,7 +107,7 @@ export class AccountsService {
    * @param nonce
    * @param browserRef
    */
-  private handleOAuthCode(event, nonce: string, browserRef: InAppBrowser) {
+  private handleOAuthCode(event, nonce: string, browserRef: InAppBrowserObject) {
     const urlParams = event.url.split('?')[1];
     const params: any = urlParams
       .split('&')

@@ -1,6 +1,6 @@
-import { NgModule, ErrorHandler } from '@angular/core';
-import { Http, XHRBackend, RequestOptions } from '@angular/http';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { ErrorHandler, NgModule } from '@angular/core';
+import { Http, HttpModule, RequestOptions, XHRBackend } from '@angular/http';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { PullRequestsPage } from '../pages/pull-requests/pull-requests.page';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -19,6 +19,11 @@ import { RepositorySettingsService } from '../pages/repository-settings/reposito
 import { UsersService } from '../pages/users/users.service';
 import { CollaboratorsPage } from '../pages/collaborators/collaborators.page';
 import { CollaboratorsService } from '../pages/collaborators/collaborators.service';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { BrowserModule } from '@angular/platform-browser';
+import { NativeStorage } from '@ionic-native/native-storage';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 @NgModule({
   declarations: [
@@ -33,7 +38,9 @@ import { CollaboratorsService } from '../pages/collaborators/collaborators.servi
     CollaboratorsPage
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    HttpModule,
+    BrowserModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -48,6 +55,10 @@ import { CollaboratorsService } from '../pages/collaborators/collaborators.servi
     CollaboratorsPage
   ],
   providers: [
+    InAppBrowser,
+    NativeStorage,
+    StatusBar,
+    SplashScreen,
     AccountsService,
     PullRequestsService,
     RepositoriesService,
