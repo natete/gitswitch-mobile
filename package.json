@@ -43,7 +43,8 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-device",
     "ionic-plugin-keyboard",
-    "cordova-plugin-inappbrowser"
+    "cordova-plugin-inappbrowser",
+    "cordova-plugin-nativestorage"
   ],
   "cordovaPlatforms": [],
   "description": "git-switch: An Ionic project"
