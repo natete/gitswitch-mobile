@@ -1,3 +1,4 @@
+import { Collaborator } from '../collaborators/collaborator';
 export interface Repository {
   id: number;
   name: string;
@@ -5,8 +6,10 @@ export interface Repository {
   issues: number;
   fork: boolean;
   age: string;
-  accounts: [{ account_id: number, canAdmin: boolean }];
+  accountId: number;
+  canAdmin: boolean;
   checked: boolean;
   language: string;
   updated: string;
+  collaborators: Collaborator[];
 }

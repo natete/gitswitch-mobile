@@ -21,9 +21,8 @@ export class CollaboratorsService {
   getCollaborators(accountId: number, repositoryName: string): Observable<Collaborator[]> {
     if (this.collaboratorsStream.getValue()) {
       this.http
-          .get(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}${this.FORMAT_URL}`)
-          .map(response => response.json().data as Collaborator[])
-          .subscribe(collaborator => this.collaboratorsStream.next(collaborator));
+          .get(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/all${this.FORMAT_URL}`)
+          .subscribe((collaborator: any) => this.collaboratorsStream.next(collaborator as Collaborator[]));
     }
 
     return this.collaboratorsStream.asObservable();

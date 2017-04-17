@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Http, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -14,7 +14,8 @@ export class AccountsService {
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
 
-  constructor(private http: Http) {}
+  constructor(private http: Http,
+              private zone: NgZone) {}
 
   /**
    * Get the observable of the accounts the user has.
@@ -24,7 +25,8 @@ export class AccountsService {
     if (this.accountsStream.getValue()) {
       this.http
           .get(`${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
-          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]));
+          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]),
+            err => console.log(err));
     }
 
     return this.accountsStream.asObservable();
@@ -58,7 +60,10 @@ export class AccountsService {
         .delete(url)
         .subscribe(() => this.accountsStream.next(
           this.accountsStream.getValue()
-              .filter((ac: Account) => ac.id !== accountId))
+              .filter((ac: Account) => ac.account_id !== accountId)),
+          err => {
+            console.log(err);
+          }
         );
   }
 
@@ -112,10 +117,12 @@ export class AccountsService {
       this.http
           .post(url, JSON.stringify(params))
           .subscribe((account: any) => {
-            const accounts: Account[] = this.accountsStream.getValue();
-            accounts.push(account as Account);
-            this.accountsStream.next(accounts);
-          });
+              const accounts: Account[] = this.accountsStream.getValue();
+              accounts.push(account as Account);
+              this.zone.run(() => this.accountsStream.next(accounts));
+            },
+            err => console.log(err)
+          );
     }
 
     browserRef.close();

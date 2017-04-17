@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, LoadingController } from 'ionic-angular';
 import { AccountsService } from './accounts.service';
 import { Account } from './account';
 
@@ -9,34 +9,39 @@ import { Account } from './account';
 })
 export class AccountsPage {
   accounts: Account[];
+  private loader;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private alertCtrl: AlertController,
+  constructor(private alertCtrl: AlertController,
               private loadingingCtrl: LoadingController,
               private accountsService: AccountsService) {}
 
   ionViewDidLoad() {
-    const loader = this.loadingingCtrl.create({
-      content: 'Getting accounts...'
-    });
-
-    loader.present();
+    this.initLoader('Getting accounts...');
 
     this.accountsService
         .getAccounts()
         .subscribe(accounts => {
           this.accounts = accounts;
-          loader
+          this.loader
             .dismiss()
             .catch(() => console.log('Already dismissed'));
         });
+  }
+
+  private initLoader(msg) {
+    this.loader = this.loadingingCtrl.create({
+      content: msg
+    });
+
+    this.loader.present();
   }
 
   /**
    * Starts the process to add a new account.
    */
   addAccount(): void {
+    this.initLoader('Adding account...');
+
     this.accountsService.addAccount();
   }
 
@@ -45,6 +50,8 @@ export class AccountsPage {
    * @param accountId the id of the account to be deleted.
    */
   deleteAccount(accountId: number): void {
+    this.initLoader('Deleting account...');
+
     const confirm = this.alertCtrl.create({
       title: 'Remove account',
       message: 'Are you sure you want to remove the account?',
