@@ -13,6 +13,9 @@ export class AuthService {
   constructor(private http: Http,
               private tokenService: TokenService) {
 
+  }
+
+  init() {
     this.tokenService
         .getToken()
         .then(token => this.authSubject.next(true))
@@ -23,6 +26,7 @@ export class AuthService {
    * @returns {Observable<void>} An observable of the auth state.
    */
   getAuthStream(): Observable<boolean> {
+    this.init();
     return this.authSubject.asObservable();
   }
 

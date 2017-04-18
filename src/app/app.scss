@@ -27,6 +27,7 @@
 ion-content.content,
 ion-list.list {
   background-color: map-get($colors, dark);
+  min-height: calc(100% - 96px);
 }
 
 .tab-button {

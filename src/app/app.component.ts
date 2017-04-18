@@ -20,8 +20,6 @@ export class MyApp {
               private splashScreen: SplashScreen) {
 
     this.initApp();
-
-    this.initLoginSubscription();
   }
 
   private initApp() {
@@ -31,10 +29,11 @@ export class MyApp {
           // Here you can do any higher level native things you might need.
           this.statusBar.styleDefault();
           this.splashScreen.hide();
+          this.initLoginSubscription();
         });
   }
 
-  initLoginSubscription() {
+  private initLoginSubscription() {
     this.authService
         .getAuthStream()
         .do(isLoggedIn => console.log(isLoggedIn))

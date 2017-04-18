@@ -12,8 +12,10 @@ export class TokenService {
    * @param token the token to be stored.
    * @returns {Promise<any>} with the result of the storage process.
    */
-  setToken(token: any): Promise<void> {
-    return this.nativeStorage.setItem('token', token);
+  setToken(token: any): void {
+    //return Promise.resolve();
+    //return this.nativeStorage.setItem('token', token);
+    localStorage.setItem('token', token);
   }
 
   /**
@@ -21,14 +23,19 @@ export class TokenService {
    * @returns {Promise<any>} with the stored token.
    */
   getToken(): Promise<any> {
-    return this.nativeStorage.getItem('token');
+    //return Promise.resolve(null);
+    //return this.nativeStorage.getItem('token');
+    const accessData = localStorage.getItem('token');
+    return Promise.resolve(accessData ? JSON.parse(accessData) : null);
   }
 
   /**
    * Removes the token from the device.
    * @returns {Promise<any>} with the result of the removal process.
    */
-  revokeToken(): Promise<void> {
-    return this.nativeStorage.remove('token');
+  revokeToken(): void {
+    //return Promise.resolve();
+    //return this.nativeStorage.remove('token');
+    localStorage.removeItem('token');
   }
 }

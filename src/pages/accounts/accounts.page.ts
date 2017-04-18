@@ -8,7 +8,7 @@ import { Account } from './account';
   templateUrl: 'accounts.page.html'
 })
 export class AccountsPage {
-  accounts: Account[];
+  accounts: Account[] = [];
   private loader;
 
   constructor(private alertCtrl: AlertController,
