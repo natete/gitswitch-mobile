@@ -17,7 +17,7 @@ import { UsersPage } from '../users/users.page';
 })
 export class RepositoriesPage {
 
-  repositories: Repository[];
+  repositories: Repository[] = [];
 
   constructor(private navCtrl: NavController,
               private loadingController: LoadingController,

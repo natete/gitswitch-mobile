@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, RequestOptions, XHRBackend, Response, Headers, RequestOptionsArgs, Request } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { TokenService } from '../auth/token.service';
-import { Observable, Subject } from 'rxjs';
-import { Auth } from '../auth/auth';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class HttpService extends Http {
@@ -16,22 +15,8 @@ export class HttpService extends Http {
 
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
 
-    // const s = new Subject<Response>();
+    const authData = this.tokenService.getToken();
 
-    const responseSubject = new Subject<Response>();
-
-    this.tokenService
-        .getToken()
-        .then(token => this.performRequest(url, options, new Auth(token), responseSubject));
-
-    return responseSubject.asObservable();
-
-    // return this.performRequest(url, options);
-
-    // return s.asObservable();
-  }
-
-  private performRequest(url: string|Request, options: RequestOptionsArgs, authData: Auth, response: Subject<Response>) {
     if (authData && authData.tokenType) {
       if (typeof url === 'string') {
         if (!options) {
@@ -45,9 +30,8 @@ export class HttpService extends Http {
       }
     }
 
-    super.request(url, options)
-         .map(res => res.text() ? res.json() : {})
-         .subscribe(res => response.next(res));
+    return super.request(url, options)
+                .map(res => res.text() ? res.json() : {});
   }
 
 }

@@ -13,20 +13,16 @@ export class TokenService {
    * @returns {Promise<any>} with the result of the storage process.
    */
   setToken(token: any): void {
-    //return Promise.resolve();
-    //return this.nativeStorage.setItem('token', token);
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', JSON.stringify(token));
   }
 
   /**
    * Returns the token stored in the device.
    * @returns {Promise<any>} with the stored token.
    */
-  getToken(): Promise<any> {
-    //return Promise.resolve(null);
-    //return this.nativeStorage.getItem('token');
-    const accessData = localStorage.getItem('token');
-    return Promise.resolve(accessData ? JSON.parse(accessData) : null);
+  getToken(): any {
+    const token = localStorage.getItem('token');
+    return JSON.parse(token);
   }
 
   /**
@@ -34,8 +30,6 @@ export class TokenService {
    * @returns {Promise<any>} with the result of the removal process.
    */
   revokeToken(): void {
-    //return Promise.resolve();
-    //return this.nativeStorage.remove('token');
     localStorage.removeItem('token');
   }
 }

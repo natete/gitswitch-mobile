@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import { TokenService } from './token.service';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Constants } from '../../shared/constants';
+import { Auth } from './auth';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +17,9 @@ export class AuthService {
   }
 
   init() {
-    this.tokenService
-        .getToken()
-        .then(token => this.authSubject.next(true))
-        .catch(() => this.authSubject.next(false));
+    const token = this.tokenService.getToken();
+
+    this.authSubject.next(!!token);
   }
 
   /**
@@ -41,9 +41,11 @@ export class AuthService {
     const requestBody = this.buildRequestBody(username, password);
 
     return this.http.post(`${Constants.BACKEND_URL}/${loginEndpoint}`, requestBody)
-               .toPromise()
-               .then(res => this.tokenService.setToken(res))
-               .then(() => this.authSubject.next(true));
+               .map(res => {
+                 this.tokenService.setToken(new Auth(res));
+                 this.authSubject.next(true);
+               })
+               .toPromise();
   }
 
   /**
