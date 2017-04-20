@@ -12,4 +12,5 @@ export interface Repository {
   language: string;
   updated: string;
   collaborators: Collaborator[];
+  type: string;
 }

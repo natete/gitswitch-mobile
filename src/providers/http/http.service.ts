@@ -31,7 +31,19 @@ export class HttpService extends Http {
     }
 
     return super.request(url, options)
-                .map(res => res.text() ? res.json() : {});
+                .map(res => res.text() ? res.json() : {})
+                .catch(this.catchAuthError(this));
+  }
+
+  private catchAuthError(httpService: HttpService) {
+    return (res: Response) => {
+      if (res.status === 401 || res.status === 403) {
+        this.tokenService.revokeToken();
+      }
+      return Observable.throw(res);
+    }
   }
 
 }
+
+

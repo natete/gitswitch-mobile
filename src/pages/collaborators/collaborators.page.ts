@@ -15,7 +15,6 @@ export class CollaboratorsPage {
   private readonly ADD_TEXT = 'add';
   private readonly DELETE_TEXT = 'delete';
 
-
   user: User;
   repositories: Repository[];
   action: string;
@@ -57,10 +56,10 @@ export class CollaboratorsPage {
     this.navCtrl.push(RepositoriesPage);
   }
 
-  getCollaborators(accountId: number, repository: Repository): Collaborator[] {
+  getCollaborators(repository: Repository): Collaborator[] {
     let result: Collaborator[];
     this.collaboratorsService
-        .getCollaborators(accountId, repository.name)
+        .getCollaborators(repository)
         .subscribe(collaborators => {
           result = collaborators;
         });
@@ -116,12 +115,15 @@ export class CollaboratorsPage {
    * @param repository the repository to check.
    */
   private checkIsCollaborator(repository: Repository): void {
-    for (let collaborator of repository.collaborators) {
-      if (collaborator.username === this.user.username && this.action === this.DELETE_TEXT) {
-        this.reposFiltered.push(repository);
-      } else if (collaborator.username !== this.user.username && this.action === this.ADD_TEXT) {
-        this.reposFiltered.push(repository);
-      }
+    let found = false;
+    if (repository.collaborators != null) {
+      found = repository.collaborators.filter(collaborator => collaborator.username == this.user.username).length == 0 ? false : true;
+    }
+
+    if (!found && this.action === this.ADD_TEXT) {
+      this.reposFiltered.push(repository);
+    } else if (found && this.action === this.DELETE_TEXT) {
+      this.reposFiltered.push(repository);
     }
   }
 
@@ -140,10 +142,10 @@ export class CollaboratorsPage {
         {
           text: 'Yes', handler: () => {
           for (let repository of repositories) {
-            if (action === 'add') {
-              this.collaboratorsService.addCollaborator(repository.accountId, repository.name, user.username);
+            if (action === this.ADD_TEXT) {
+              this.collaboratorsService.addCollaborator(repository, user);
             } else {
-              this.collaboratorsService.deleteCollaborator(repository.accountId, repository.name, user.username);
+              this.collaboratorsService.deleteCollaborator(repository, user);
             }
           }
         }

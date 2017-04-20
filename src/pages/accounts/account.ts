@@ -8,5 +8,5 @@ export interface Account {
   repoNumber: number;
   organization: string;
   location: string;
-  account_id: number;
+  accountId: number;
 }

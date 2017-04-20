@@ -6,7 +6,7 @@
 
 <ion-content>
   <ion-item *ngIf="!addedUser" color="dark">
-    <ion-label><strong color="primary">Username:</strong></ion-label>
+    <ion-label><strong ion-text color="primary">Username:</strong></ion-label>
     <ion-input class="color-light" [(ngModel)]="username" type="text"></ion-input>
     <button ion-button icon-only item-right (click)="confirmUser(username)">
       <ion-icon color="light" name="person-add"></ion-icon>
@@ -15,7 +15,7 @@
 
   <ion-item *ngIf="addedUser" color="dark">
     <ion-icon name="person" item-left color="light"></ion-icon>
-    <strong color="light">{{addedUser}}</strong>
+    <strong ion-text color="light">{{addedUser}}</strong>
     <button ion-button icon-only item-right (click)="deleteUser()">
       <ion-icon color="light" name="close"></ion-icon>
     </button>

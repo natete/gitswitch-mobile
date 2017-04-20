@@ -61,7 +61,7 @@ export class AccountsService {
         .delete(url)
         .subscribe(() => this.accountsStream.next(
           this.accountsStream.getValue()
-              .filter((ac: Account) => ac.account_id !== accountId)),
+              .filter((ac: Account) => ac.accountId !== accountId)),
           err => {
             console.log(err);
           }

@@ -20,22 +20,11 @@ export class RepositoriesService {
    * @returns {Observable<T>} the observable of repositories the user has.
    */
   getRepositories(): Observable<Repository[]> {
-    if (this.repositoriesStream.getValue()) {
-      this.http
+    return this.http
           .get(`${this.REPOSITORIES_URL}/all/all${this.FORMAT_URL}`)
-          .subscribe((repositories: any) => {
-            for (let repository of repositories) {
-              if (repository.canAdmin) {
-                this.collaboratorService.getCollaborators(repository.accountId, repository.name)
-                    .subscribe(collaborators => {
-                      repository.collaborators = collaborators;
-                    });
-              }
-            }
-            this.repositoriesStream.next(repositories as Repository[])
-          });
-    }
-
-    return this.repositoriesStream.asObservable();
+               .map((res: any) => res as Repository[])
+               .flatMap(repositories => this.collaboratorService.fetchReposCollaborators(repositories))
+               .catch((error: any) => Observable.throw(error));
   }
+
 }

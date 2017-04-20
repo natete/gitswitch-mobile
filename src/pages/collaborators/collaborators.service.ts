@@ -3,6 +3,8 @@ import { Http } from '@angular/http';
 import { Collaborator } from './collaborator';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Constants } from '../../shared/constants';
+import { User } from '../users/user';
+import { Repository } from '../repositories/repository';
 
 @Injectable()
 export class CollaboratorsService {
@@ -18,25 +20,38 @@ export class CollaboratorsService {
    * @params repository the data of repository
    * @returns {Observable<T>} the observable of collaborators the repository has.
    */
-  getCollaborators(accountId: number, repositoryName: string): Observable<Collaborator[]> {
+  getCollaborators(repository: Repository): Observable<Collaborator[]> {
     if (this.collaboratorsStream.getValue()) {
       this.http
-          .get(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/all${this.FORMAT_URL}`)
+          .get(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/all${this.FORMAT_URL}`)
           .subscribe((collaborator: any) => this.collaboratorsStream.next(collaborator as Collaborator[]));
     }
 
     return this.collaboratorsStream.asObservable();
   }
 
+  fetchReposCollaborators(repositories: Repository[]): Observable<Repository[]> {
+    return Observable.forkJoin(repositories.map(repository => repository.canAdmin ? this.fetchRepoCollaborators(repository) : Observable.of(repository)));
+  }
+
+  fetchRepoCollaborators(repository: Repository) {
+    return this.http
+               .get(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/all${this.FORMAT_URL}`)
+               .map((res: any) => res as Collaborator[])
+               .do(collaborators => {
+                 repository.collaborators = collaborators;
+               })
+               .map(collaborators => repository);
+  }
+
   /**
    * Add it from the list of collaborators the repository has.
-   * @params accountId the id of account has permissions.
-   * @param repositoryName the name of repository where the user isn't collaborator.
-   * @param username username to add user as a collaborator.
+   * @param repository data of repository where the user isn't collaborator.
+   * @param user data of user to add user as a collaborator.
    */
-  addCollaborator(accountId: number, repositoryName: string, username: string): void {
+  addCollaborator(repository: Repository, user: User): void {
     this.http
-        .put(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/${username}${this.FORMAT_URL}`, JSON.stringify({}))
+        .put(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/${user.username}${this.FORMAT_URL}`, JSON.stringify({}))
         .subscribe((collaborator: any) => {
           const collaborators: Collaborator[] = this.collaboratorsStream.getValue();
           collaborators.push(collaborator as Collaborator);
@@ -46,28 +61,26 @@ export class CollaboratorsService {
 
   /**
    * Removes it from the list of collaborators the repository has.
-   * @params accountId the id of account has permissions.
-   * @param repositoryName the name of repository where the user has.
-   * @param username username to remove user as a collaborator.
+   * @param repository data of repository where the user has.
+   * @param user data of user to remove user as a collaborator.
    */
-  deleteCollaborator(accountId: number, repositoryName: string, username: string): void {
+  deleteCollaborator(repository: Repository, user: User): void {
     this.http
-        .delete(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/${username}${this.FORMAT_URL}`)
+        .delete(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/${user.username}${this.FORMAT_URL}`)
         .subscribe(() => this.collaboratorsStream.next(
           this.collaboratorsStream.getValue()
-              .filter((co: Collaborator) => co.username !== username))
+              .filter((co: Collaborator) => co.username !== user.username))
         );
 
   }
 
   /**
    * Check if a user is a collaborator in this repository.
-   * @params accountId the id of account has permissions..
    * @param repository array with the data of repository where checked if a user is a collaborator.
    * @param username username to check if a user is a collaborator.
    */
-  checkIsCollaborator(accountId: number, repositoryName: string, username: string): Observable<boolean> {
-    return this.http.get(`${this.COLLABORATORS_URL}/${accountId}/${repositoryName}/${username}${this.FORMAT_URL}`)
+  checkIsCollaborator(repository: Repository, user: User): Observable<boolean> {
+    return this.http.get(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.name}/${user.username}${this.FORMAT_URL}`)
                .map((response: any) => response);
   }
 
