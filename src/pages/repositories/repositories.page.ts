@@ -4,6 +4,7 @@ import { Repository } from './repository';
 import { RepositoriesService } from './repositories.service';
 import { RepositorySettingsPage } from '../repository-settings/repository-settings.page';
 import { UsersPage } from '../users/users.page';
+import { Observable } from 'rxjs';
 
 /*
  Generated class for the Settings page.
@@ -18,27 +19,29 @@ import { UsersPage } from '../users/users.page';
 export class RepositoriesPage {
 
   repositories: Repository[] = [];
+  private loader;
 
   constructor(private navCtrl: NavController,
-              private loadingController: LoadingController,
+              private loadingCtrl: LoadingController,
               private repositoriesService: RepositoriesService,
               private toastCtrl: ToastController) {}
 
   ionViewDidLoad() {
-    const loader = this.loadingController.create({
-      content: 'Getting repositories...'
-    });
+    this.initLoader('Getting repositories...');
 
-    loader.present();
+    this.getRepositories();
+  }
 
+  getRepositories() {
     this.repositoriesService
         .getRepositories()
         .subscribe(repositories => {
-          this.repositories = repositories;
-          loader
-            .dismiss()
-            .catch(() => console.log('Already dismissed'));
-        });
+            this.repositories = repositories;
+            this.loader
+                .dismiss()
+                .catch(() => console.log('Already dismissed'));
+          },
+          err => {return Observable.throw(err)});
   }
 
   goToRepositorySettings(setting){
@@ -62,5 +65,13 @@ export class RepositoriesPage {
 
       toast.present();
     }
+  }
+
+  private initLoader(msg) {
+    this.loader = this.loadingCtrl.create({
+      content: msg
+    });
+
+    this.loader.present();
   }
 }

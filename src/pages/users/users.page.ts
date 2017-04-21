@@ -3,6 +3,7 @@ import { NavParams, NavController, LoadingController } from 'ionic-angular';
 import { User } from './user';
 import { UsersService } from './users.service';
 import { CollaboratorsPage } from '../collaborators/collaborators.page';
+import { Observable } from 'rxjs';
 
 /*
  Generated class for the Users page.
@@ -20,29 +21,40 @@ export class UsersPage {
   users: User[] = [];
   username: string;
   addedUser: string;
+  private loader;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private usersService: UsersService,
-              private loadingController: LoadingController) {}
+              private loadingCtrl: LoadingController) {}
+
+  private initLoader(msg) {
+    this.loader = this.loadingCtrl.create({
+      content: msg
+    });
+
+    this.loader.present();
+  }
 
   confirmUser(username) {
     if (username) {
-      const loader = this.loadingController.create({
-        content: 'Getting users...'
-      });
-
-      loader.present();
+      this.initLoader('Getting users...');
 
       this.usersService
           .getUsers(username)
           .subscribe(users => {
             this.users = users;
             this.addedUser = username;
-            loader
+              this.loader
               .dismiss()
               .catch(() => console.log('Already dismissed'));
-          });
+            },
+            err => {
+              this.loader
+                  .dismiss()
+                  .catch(() => console.log('Already dismissed'));
+              return Observable.throw(err);
+            });
     }
   }
 

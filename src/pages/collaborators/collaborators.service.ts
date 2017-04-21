@@ -24,7 +24,8 @@ export class CollaboratorsService {
     if (this.collaboratorsStream.getValue()) {
       this.http
           .get(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/all${this.FORMAT_URL}`)
-          .subscribe((collaborator: any) => this.collaboratorsStream.next(collaborator as Collaborator[]));
+          .subscribe((collaborator: any) => this.collaboratorsStream.next(collaborator as Collaborator[]),
+            err => {return Observable.throw(err)});
     }
 
     return this.collaboratorsStream.asObservable();
@@ -56,7 +57,8 @@ export class CollaboratorsService {
           const collaborators: Collaborator[] = this.collaboratorsStream.getValue();
           collaborators.push(collaborator as Collaborator);
           this.collaboratorsStream.next(collaborators);
-        });
+          },
+          err => {return Observable.throw(err)});
   }
 
   /**
@@ -70,7 +72,8 @@ export class CollaboratorsService {
         .subscribe(() => this.collaboratorsStream.next(
           this.collaboratorsStream.getValue()
               .filter((co: Collaborator) => co.username !== user.username))
-        );
+        ),
+      err => {return Observable.throw(err)};
 
   }
 

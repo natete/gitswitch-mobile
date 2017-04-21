@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AlertController, LoadingController } from 'ionic-angular';
 import { AccountsService } from './accounts.service';
 import { Account } from './account';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'page-accounts',
@@ -9,27 +10,37 @@ import { Account } from './account';
 })
 export class AccountsPage {
   accounts: Account[] = [];
-  private loader;
+  loader;
 
   constructor(private alertCtrl: AlertController,
-              private loadingingCtrl: LoadingController,
+              private loadingCtrl: LoadingController,
               private accountsService: AccountsService) {}
 
   ionViewDidLoad() {
     this.initLoader('Getting accounts...');
 
+    this.getAccounts();
+  }
+
+  getAccounts() {
     this.accountsService
         .getAccounts()
         .subscribe(accounts => {
-          this.accounts = accounts;
-          this.loader
-            .dismiss()
-            .catch(() => console.log('Already dismissed'));
-        });
+            this.accounts = accounts;
+            this.loader
+                .dismiss()
+                .catch(() => console.log('Already dismissed'));
+          },
+          err => {
+            this.loader
+                .dismiss()
+                .catch(() => console.log('Already dismissed'));
+            return Observable.throw(err);
+          });
   }
 
   private initLoader(msg) {
-    this.loader = this.loadingingCtrl.create({
+    this.loader = this.loadingCtrl.create({
       content: msg
     });
 
@@ -40,7 +51,7 @@ export class AccountsPage {
    * Starts the process to add a new account.
    */
   addAccount(): void {
-    this.initLoader('Adding account...');
+    //this.initLoader('Adding account...');
 
     this.accountsService.addAccount();
   }

@@ -26,8 +26,7 @@ export class AccountsService {
     if (this.accountsStream.getValue()) {
       this.http
           .get(`${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
-          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]),
-            err => console.log(err));
+          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]));
     }
 
     return this.accountsStream.asObservable();
@@ -122,8 +121,7 @@ export class AccountsService {
               accounts.push(account as Account);
               this.zone.run(() => this.accountsStream.next(accounts));
             },
-            err => console.log(err)
-          );
+            err => {return Observable.throw(err);});
     }
 
     browserRef.close();

@@ -1,4 +1,4 @@
-import { NavParams, NavController, LoadingController, AlertController, ToastController } from 'ionic-angular';
+import { NavParams, NavController, AlertController, ToastController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { User } from '../users/user';
 import { Repository } from '../repositories/repository';
@@ -19,10 +19,10 @@ export class CollaboratorsPage {
   repositories: Repository[];
   action: string;
   reposFiltered: Repository[] = [];
+  private toast;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
-              private loadingController: LoadingController,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController,
               private collaboratorsService: CollaboratorsService) {
@@ -37,19 +37,23 @@ export class CollaboratorsPage {
     this.getRepositoriesFiltered();
 
     if (this.reposFiltered.length == 0) {
-      let toast = this.toastCtrl.create({
-        message: `You can not ${this.action} collaborator in any repository`,
-        duration: 3000,
-        position: 'pop'
-      });
-
-      toast.onDidDismiss(() => {
-        console.log('Dismissed toast');
-      });
-
-      toast.present();
+      this.initToast(`You can not ${this.action} collaborator in any repository`);
     }
 
+  }
+
+  private initToast(msg) {
+    this.toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'pop'
+    });
+
+    this.toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+
+    this.toast.present();
   }
 
   goToRepositories() {
@@ -74,7 +78,7 @@ export class CollaboratorsPage {
   actionsCollaborator() {
     if (this.user) {
       let reposChecked: Repository[] = [];
-      for (let repo of this.reposFiltered) {
+      for (const repo of this.reposFiltered) {
         if (repo.checked) {
           reposChecked.push(repo);
         }
@@ -82,17 +86,7 @@ export class CollaboratorsPage {
       if (reposChecked.length != 0) {
         this.proceedActionCollaborator(this.user, reposChecked, this.action);
       } else {
-        let toast = this.toastCtrl.create({
-          message: 'You must select at least one repository',
-          duration: 3000,
-          position: 'pop'
-        });
-
-        toast.onDidDismiss(() => {
-          console.log('Dismissed toast');
-        });
-
-        toast.present();
+        this.initToast('You must select at least one repository');
       }
     }
   }
@@ -102,7 +96,7 @@ export class CollaboratorsPage {
    * delete it must has the username as collaborator.
    */
   getRepositoriesFiltered() {
-    for (let repository of this.repositories) {
+    for (const repository of this.repositories) {
       if (repository.canAdmin) {
         this.checkIsCollaborator(repository);
       }
@@ -141,7 +135,7 @@ export class CollaboratorsPage {
         { text: 'Cancel' },
         {
           text: 'Yes', handler: () => {
-          for (let repository of repositories) {
+          for (const repository of repositories) {
             if (action === this.ADD_TEXT) {
               this.collaboratorsService.addCollaborator(repository, user);
             } else {
@@ -153,19 +147,8 @@ export class CollaboratorsPage {
       ]
     });
 
-    confirm.present();
+    confirm.present(() => this.initToast(`Collaborator was ${action}ed successfully`));
 
-    //TODO then
-    let toast = this.toastCtrl.create({
-      message: `Collaborator was ${action}ed successfully`,
-      duration: 3000,
-      position: 'pop'
-    });
 
-    toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
-    });
-
-    toast.present();
   }
 }

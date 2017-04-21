@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NavParams, LoadingController, NavController } from 'ionic-angular';
+import { LoadingController, NavController } from 'ionic-angular';
 import { Repository } from '../repositories/repository';
 import { RepositorySetting } from './repository-setting';
 import { RepositorySettingsService } from './repository-settings.service';
 import { RepositoriesPage } from '../repositories/repositories.page';
+import { Observable } from 'rxjs';
 
 /*
   Generated class for the RepositorySettings page.
@@ -19,36 +20,43 @@ export class RepositorySettingsPage {
 
   repository: Repository;
   repositorySetting: RepositorySetting;
+  private loader;
 
   constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private loadingController: LoadingController,
+              private loadingCtrl: LoadingController,
               private repositorySettingsService: RepositorySettingsService) {
 
   }
 
   ionViewDidLoad() {
-    this.repository = this.navParams.data;
+    this.initLoader('Getting repository setting...');
 
-    const loader = this.loadingController.create({
-      content: 'Getting repository setting...'
-    });
-
-    loader.present();
-
-    this.repositorySettingsService
-        .getRepositorySettings(this.repository.id)
-        .filter(repoSettings => !!repoSettings)
-        .subscribe(repositorySetting => {
-          this.repositorySetting = repositorySetting;
-          loader
-            .dismiss()
-            .catch(() => console.log('Already dismissed'));
-        });
+    this.getRepositorySettings();
   }
 
   updateRepositorySetting(): void{
     this.repositorySettingsService.updateRepositorySettings(this.repositorySetting).then(() => this.goToSettings());
+  }
+
+  private initLoader(msg) {
+    this.loader = this.loadingCtrl.create({
+      content: msg
+    });
+
+    this.loader.present();
+  }
+
+  getRepositorySettings() {
+    this.repositorySettingsService
+        .getRepositorySettings(this.repository.id)
+        .filter(repoSettings => !!repoSettings)
+        .subscribe(repositorySetting => {
+            this.repositorySetting = repositorySetting;
+            this.loader
+                .dismiss()
+                .catch(() => console.log('Already dismissed'));
+          },
+          err => {return Observable.throw(err)});
   }
 
   private goToSettings(){

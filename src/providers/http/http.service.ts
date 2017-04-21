@@ -3,13 +3,17 @@ import { Http, RequestOptions, XHRBackend, Response, Headers, RequestOptionsArgs
 import 'rxjs/add/operator/map';
 import { TokenService } from '../auth/token.service';
 import { Observable } from 'rxjs';
+import { ToastController } from 'ionic-angular';
 
 @Injectable()
 export class HttpService extends Http {
 
+  private toast;
+
   constructor(backend: XHRBackend,
               options: RequestOptions,
-              private tokenService: TokenService) {
+              private tokenService: TokenService,
+              private toastCtrl: ToastController) {
     super(backend, options);
   }
 
@@ -35,10 +39,26 @@ export class HttpService extends Http {
                 .catch(this.catchAuthError(this));
   }
 
+  private initToast(msg) {
+    this.toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'pop'
+    });
+
+    this.toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+
+    this.toast.present();
+  }
+
   private catchAuthError(httpService: HttpService) {
     return (res: Response) => {
       if (res.status === 401 || res.status === 403) {
         this.tokenService.revokeToken();
+      } else if (res.status === 409) {
+        this.initToast(`Account added yet.`);
       }
       return Observable.throw(res);
     }
