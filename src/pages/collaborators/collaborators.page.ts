@@ -142,13 +142,13 @@ export class CollaboratorsPage {
               this.collaboratorsService.deleteCollaborator(repository, user);
             }
           }
+          this.initToast(`Collaborator was ${action}ed successfully`);
+          this.navCtrl.push(RepositoriesPage);
         }
         }
       ]
     });
 
-    confirm.present(() => this.initToast(`Collaborator was ${action}ed successfully`));
-
-
+    confirm.present();
   }
 }

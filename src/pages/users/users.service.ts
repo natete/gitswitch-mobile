@@ -20,11 +20,12 @@ export class UsersService {
    * @returns {Observable<User[]>} the observable of the users.
    */
   getUsers(username: string): Observable<User[]> {
-    if (this.usersStream.getValue()) {
       this.http
           .get(`${this.USERS_URL}/all/${username}${this.FORMAT_URL}`)
-          .subscribe((user: any) => this.usersStream.next(user as User[]));
-    }
+          .subscribe((user: any) => {
+              this.usersStream.next(user as User[])
+            },
+            err => this.usersStream.error(err));
 
     return this.usersStream.asObservable();
   }

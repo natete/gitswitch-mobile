@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Account } from './account';
 import { Constants } from '../../shared/constants';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
+import { ToastController } from 'ionic-angular';
 
 @Injectable()
 export class AccountsService {
@@ -13,10 +14,12 @@ export class AccountsService {
   private readonly FORMAT_URL = '?_format=json';
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
+  private toast;
 
   constructor(private http: Http,
               private zone: NgZone,
-              private inAppBrowser: InAppBrowser) {}
+              private inAppBrowser: InAppBrowser,
+              private toastCtrl: ToastController) {}
 
   /**
    * Get the observable of the accounts the user has.
@@ -58,9 +61,12 @@ export class AccountsService {
     const url = `${this.ACCOUNTS_URL}/${accountId}`;
     this.http
         .delete(url)
-        .subscribe(() => this.accountsStream.next(
-          this.accountsStream.getValue()
-              .filter((ac: Account) => ac.accountId !== accountId)),
+        .subscribe(() => {
+            this.accountsStream.next(
+              this.accountsStream.getValue()
+                  .filter((ac: Account) => ac.accountId !== accountId));
+            this.initToast(`Account deleted successfully`);
+          },
           err => {
             console.log(err);
           }
@@ -120,6 +126,7 @@ export class AccountsService {
               const accounts: Account[] = this.accountsStream.getValue();
               accounts.push(account as Account);
               this.zone.run(() => this.accountsStream.next(accounts));
+              this.initToast(`Account added successfully`);
             },
             err => {return Observable.throw(err);});
     }
@@ -137,5 +144,19 @@ export class AccountsService {
     const paramArray = param.split('=');
     accumulator[paramArray[0]] = paramArray[1];
     return accumulator;
+  }
+
+  private initToast(msg) {
+    this.toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'pop'
+    });
+
+    this.toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+
+    this.toast.present();
   }
 }

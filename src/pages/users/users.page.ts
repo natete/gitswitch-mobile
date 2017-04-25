@@ -3,7 +3,6 @@ import { NavParams, NavController, LoadingController } from 'ionic-angular';
 import { User } from './user';
 import { UsersService } from './users.service';
 import { CollaboratorsPage } from '../collaborators/collaborators.page';
-import { Observable } from 'rxjs';
 
 /*
  Generated class for the Users page.
@@ -28,32 +27,22 @@ export class UsersPage {
               private usersService: UsersService,
               private loadingCtrl: LoadingController) {}
 
-  private initLoader(msg) {
-    this.loader = this.loadingCtrl.create({
-      content: msg
-    });
-
-    this.loader.present();
-  }
 
   confirmUser(username) {
     if (username) {
-      this.initLoader('Getting users...');
+      //this.initLoader('Getting users...');
 
       this.usersService
           .getUsers(username)
           .subscribe(users => {
-            this.users = users;
-            this.addedUser = username;
-              this.loader
-              .dismiss()
-              .catch(() => console.log('Already dismissed'));
-            },
-            err => {
+              this.users = users;
+              this.addedUser = username;
               this.loader
                   .dismiss()
                   .catch(() => console.log('Already dismissed'));
-              return Observable.throw(err);
+            },
+            err => {
+              console.error(err);
             });
     }
   }
@@ -70,6 +59,14 @@ export class UsersPage {
       action: this.navParams.data.action,
       repositories: this.navParams.data.repositories
     });
+  }
+
+  private initLoader(msg) {
+    this.loader = this.loadingCtrl.create({
+      content: msg
+    });
+
+    this.loader.present();
   }
 
 }

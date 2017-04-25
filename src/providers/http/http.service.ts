@@ -58,7 +58,9 @@ export class HttpService extends Http {
       if (res.status === 401 || res.status === 403) {
         this.tokenService.revokeToken();
       } else if (res.status === 409) {
-        this.initToast(`Account added yet.`);
+        this.initToast(`You've already added this account`);
+      } else if (res.status === 404) {
+        this.initToast(`User does not exist`);
       }
       return Observable.throw(res);
     }

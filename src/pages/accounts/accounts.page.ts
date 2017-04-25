@@ -51,8 +51,6 @@ export class AccountsPage {
    * Starts the process to add a new account.
    */
   addAccount(): void {
-    //this.initLoader('Adding account...');
-
     this.accountsService.addAccount();
   }
 
@@ -67,7 +65,11 @@ export class AccountsPage {
       title: 'Remove account',
       message: 'Are you sure you want to remove the account?',
       buttons: [
-        { text: 'Cancel' },
+        {
+          text: 'Cancel', handler: () => this.loader
+                                             .dismiss()
+                                             .catch(() => console.log('Already dismissed'))
+        },
         { text: 'Yes', handler: () => this.proceedRemoveAccount(accountId) }
       ]
     });
