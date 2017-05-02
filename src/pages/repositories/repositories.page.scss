@@ -1,7 +1,8 @@
 page-repositories {
-  /*ion-list.list {
-    min-height: calc(100% - 96px);
-  }*/
+
+  .back-button.show-back-button {
+    display: none;
+  }
 
   item-content {
 

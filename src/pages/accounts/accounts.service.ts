@@ -29,7 +29,11 @@ export class AccountsService {
     if (this.accountsStream.getValue()) {
       this.http
           .get(`${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
-          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]));
+          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]),
+            err => {
+              this.accountsStream.next([]);
+              console.error(err);
+            });
     }
 
     return this.accountsStream.asObservable();
@@ -68,7 +72,8 @@ export class AccountsService {
             this.initToast(`Account deleted successfully`);
           },
           err => {
-            console.log(err);
+            console.error(err);
+            return Observable.throw(err);
           }
         );
   }
@@ -128,7 +133,13 @@ export class AccountsService {
               this.zone.run(() => this.accountsStream.next(accounts));
               this.initToast(`Account added successfully`);
             },
-            err => {return Observable.throw(err);});
+            err => {
+              if (err.status === 409) {
+                this.initToast(`You've already added this account`);
+              }
+              console.error(err);
+              return Observable.throw(err);
+            });
     }
 
     browserRef.close();

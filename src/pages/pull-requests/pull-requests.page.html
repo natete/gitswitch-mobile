@@ -13,6 +13,9 @@
 </ion-header>
 
 <ion-content>
+  <div *ngIf="pullRequests && pullRequests.length === 0" class="no-pull-request-container" color="light">
+    You do not have any open pull request!
+  </div>
   <ion-list [virtualScroll]="pullRequests" no-lines approxItemHeight="210px">
     <ion-item *virtualItem="let pullRequest" color="dark">
 

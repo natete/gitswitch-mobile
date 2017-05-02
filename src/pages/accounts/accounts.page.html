@@ -14,6 +14,9 @@
 
 <ion-content padding>
 
+  <div *ngIf="accounts && accounts.length === 0" class="no-accounts-container">
+    You have not added any account yet!
+  </div>
   <ion-list [virtualScroll]="accounts" approxItemHeight="115px">
     <ion-item *virtualItem="let account" margin-bottom>
       <ion-avatar item-left><img [src]="account.photoUrl"></ion-avatar>

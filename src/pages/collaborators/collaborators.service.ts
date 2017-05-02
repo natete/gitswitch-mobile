@@ -53,9 +53,13 @@ export class CollaboratorsService {
   addCollaborator(repository: Repository, user: User): void {
     this.http
         .put(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/${user.username}${this.FORMAT_URL}`, JSON.stringify({}))
-        .subscribe((collaborator: any) => {
+        .subscribe(() => {
+            const collaborator = new Collaborator();
+            collaborator.id = user.id;
+            collaborator.username = user.username;
+            collaborator.photoUrl = user.photoUrl
           const collaborators: Collaborator[] = this.collaboratorsStream.getValue();
-          collaborators.push(collaborator as Collaborator);
+            collaborators.push(collaborator);
           this.collaboratorsStream.next(collaborators);
           },
           err => {return Observable.throw(err)});

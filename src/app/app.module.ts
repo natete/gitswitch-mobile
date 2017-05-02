@@ -1,6 +1,6 @@
 import { ErrorHandler, NgModule } from '@angular/core';
 import { Http, HttpModule, RequestOptions, XHRBackend } from '@angular/http';
-import { IonicApp, IonicErrorHandler, IonicModule, ToastController } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { PullRequestsPage } from '../pages/pull-requests/pull-requests.page';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -68,7 +68,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     UsersService,
     CollaboratorsService,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    { provide: Http, useFactory: HttpFactory, deps: [XHRBackend, RequestOptions, TokenService, ToastController] }
+    { provide: Http, useFactory: HttpFactory, deps: [XHRBackend, RequestOptions, TokenService] }
   ]
 })
 export class AppModule {

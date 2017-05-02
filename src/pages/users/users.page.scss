@@ -1,11 +1,4 @@
 page-users {
-
-  /*ion-label {
-    strong {
-      color: map-get($colors, primary);
-    }
-  }*/
-
   .item-md.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
     border-bottom-color: map-get($colors, primary);
     box-shadow: inset 0 -1px 0 0 map-get($colors, primary);
@@ -17,4 +10,9 @@ page-users {
     }
   }
 
+  .no-users-container {
+    margin-top: 1em;
+    text-align: center;
+    color: map-get($colors, light);
+  }
 }

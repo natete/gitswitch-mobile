@@ -30,18 +30,27 @@ export class UsersPage {
 
   confirmUser(username) {
     if (username) {
-      //this.initLoader('Getting users...');
+      this.initLoader('Getting users...');
 
       this.usersService
-          .getUsers(username)
+          .getUsers(username.trim())
           .subscribe(users => {
+              if (users && users.length !== 0) {
               this.users = users;
               this.addedUser = username;
+              } else {
+                this.addedUser = '';
+                this.username = '';
+                this.users = [];
+              }
               this.loader
                   .dismiss()
                   .catch(() => console.log('Already dismissed'));
             },
             err => {
+              this.loader
+                  .dismiss()
+                  .catch(() => console.log('Already dismissed'));
               console.error(err);
             });
     }

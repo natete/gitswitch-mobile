@@ -25,4 +25,18 @@ page-collaborators {
   .large-icon {
     font-size: 4rem;
   }
+  .fixed {
+    bottom: 50px;
+    right: 10px;
+  }
+
+  ion-content {
+    button {
+      top: auto;
+      right: 0px;
+      bottom: 3.6em;
+      left: auto;
+      position: fixed !important;
+    }
+  }
 }

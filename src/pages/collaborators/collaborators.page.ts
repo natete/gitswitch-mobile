@@ -97,6 +97,7 @@ export class CollaboratorsPage {
    */
   getRepositoriesFiltered() {
     for (const repository of this.repositories) {
+      //The user has permission
       if (repository.canAdmin) {
         this.checkIsCollaborator(repository);
       }
@@ -111,7 +112,7 @@ export class CollaboratorsPage {
   private checkIsCollaborator(repository: Repository): void {
     let found = false;
     if (repository.collaborators != null) {
-      found = repository.collaborators.filter(collaborator => collaborator.username == this.user.username).length == 0 ? false : true;
+      found = repository.collaborators.find(collaborator => collaborator.username == this.user.username) == undefined ? false : true;
     }
 
     if (!found && this.action === this.ADD_TEXT) {
@@ -142,7 +143,7 @@ export class CollaboratorsPage {
               this.collaboratorsService.deleteCollaborator(repository, user);
             }
           }
-          this.initToast(`Collaborator was ${action}ed successfully`);
+          this.initToast(`Collaborator was ${action == 'add' ? 'added' : 'deleted' } successfully`);
           this.navCtrl.push(RepositoriesPage);
         }
         }
