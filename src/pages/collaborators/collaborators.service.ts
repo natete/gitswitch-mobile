@@ -39,9 +39,7 @@ export class CollaboratorsService {
     return this.http
                .get(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/all${this.FORMAT_URL}`)
                .map((res: any) => res as Collaborator[])
-               .do(collaborators => {
-                 repository.collaborators = collaborators;
-               })
+               .do(collaborators => repository.collaborators = collaborators)
                .map(collaborators => repository);
   }
 
@@ -57,10 +55,10 @@ export class CollaboratorsService {
             const collaborator = new Collaborator();
             collaborator.id = user.id;
             collaborator.username = user.username;
-            collaborator.photoUrl = user.photoUrl
-          const collaborators: Collaborator[] = this.collaboratorsStream.getValue();
+            collaborator.photoUrl = user.photoUrl;
+            const collaborators: Collaborator[] = this.collaboratorsStream.getValue();
             collaborators.push(collaborator);
-          this.collaboratorsStream.next(collaborators);
+            this.collaboratorsStream.next(collaborators);
           },
           err => {return Observable.throw(err)});
   }
@@ -73,11 +71,9 @@ export class CollaboratorsService {
   deleteCollaborator(repository: Repository, user: User): void {
     this.http
         .delete(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/${user.username}${this.FORMAT_URL}`)
-        .subscribe(() => this.collaboratorsStream.next(
-          this.collaboratorsStream.getValue()
-              .filter((co: Collaborator) => co.username !== user.username))
-        ),
-      err => {return Observable.throw(err)};
+        .subscribe(
+          () => this.collaboratorsStream.next(this.collaboratorsStream.getValue().filter((co: Collaborator) => co.username !== user.username))),
+          err => {return Observable.throw(err)};
 
   }
 
