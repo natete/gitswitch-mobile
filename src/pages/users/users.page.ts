@@ -36,8 +36,8 @@ export class UsersPage {
           .getUsers(username.trim())
           .subscribe(users => {
               if (users && users.length !== 0) {
-              this.users = users;
-              this.addedUser = username;
+                this.users = users;
+                this.addedUser = username;
               } else {
                 this.addedUser = '';
                 this.username = '';
