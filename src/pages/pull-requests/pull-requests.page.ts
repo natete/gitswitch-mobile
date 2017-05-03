@@ -27,7 +27,7 @@ export class PullRequestsPage {
         .getPullRequests()
         .subscribe(pullRequests => {
           this.pullRequests = pullRequests;
-            this.loader
+          this.loader
             .dismiss()
             .catch(() => console.log('Already dismissed'));
           },
@@ -35,10 +35,7 @@ export class PullRequestsPage {
   }
 
   private initLoader(msg) {
-    this.loader = this.loadingCtrl.create({
-      content: msg
-    });
-
+    this.loader = this.loadingCtrl.create({ content: msg });
     this.loader.present();
   }
 
