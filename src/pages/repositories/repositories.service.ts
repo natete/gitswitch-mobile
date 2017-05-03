@@ -21,7 +21,7 @@ export class RepositoriesService {
    */
   getRepositories(): Observable<Repository[]> {
     return this.http
-          .get(`${this.REPOSITORIES_URL}/all/all${this.FORMAT_URL}`)
+               .get(`${this.REPOSITORIES_URL}/all/all${this.FORMAT_URL}`)
                .map((res: any) => res as Repository[])
                .flatMap(repositories => this.collaboratorService.fetchReposCollaborators(repositories))
                .catch((error: any) => Observable.throw(error));
