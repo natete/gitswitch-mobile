@@ -1,0 +1,42 @@
+page-collaborators {
+  .item-content {
+
+    .setting-info-container {
+      .icon {
+        margin-right: 8px;
+      }
+    }
+
+    ion-icon[item-left] {
+      margin-bottom: 0;
+    }
+  }
+  .color-primary {
+    ion-icon {
+      color: map-get($colors, font);
+    }
+
+    * {
+      color: map-get($colors, primary);
+      font-size: 1.55rem;
+    }
+  }
+
+  .large-icon {
+    font-size: 4rem;
+  }
+  .fixed {
+    bottom: 50px;
+    right: 10px;
+  }
+
+  ion-content {
+    button {
+      top: auto;
+      right: 0px;
+      bottom: 3.6em;
+      left: auto;
+      position: fixed !important;
+    }
+  }
+}

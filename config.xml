@@ -3,11 +3,12 @@
   <name>git-switch</name>
   <description>An awesome Ionic/Cordova app.</description>
   <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content src="http://10.35.1.99:4200" original-src="index.html"/>
+    <content src="index.html"/>
   <access origin="*"/>
   <allow-navigation href="http://ionic.local/*"/>
   <allow-navigation href="http://10.35.1.99:8100"/>
   <allow-navigation href="http://10.35.1.99:4200"/>
+    <allow-navigation href="http://192.168.1.102:4200"/>
   <allow-intent href="http://*/*"/>
   <allow-intent href="https://*/*"/>
   <allow-intent href="tel:*"/>
@@ -91,5 +92,7 @@
   <plugin name="cordova-plugin-statusbar" spec="2.2.1"/>
   <plugin name="cordova-plugin-device" spec="1.1.4"/>
   <plugin name="cordova-plugin-splashscreen" spec="~4.0.1"/>
+    <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0"/>
+    <plugin name="cordova-plugin-nativestorage" spec="2.2.2"/>
   <icon src="resources/android/icon/drawable-xhdpi-icon.png"/>
 </widget>

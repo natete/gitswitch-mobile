@@ -14,6 +14,9 @@
 
 <ion-content padding>
 
+  <div *ngIf="accounts && accounts.length === 0" class="no-accounts-container">
+    You have not added any account yet!
+  </div>
   <ion-list [virtualScroll]="accounts" approxItemHeight="115px">
     <ion-item *virtualItem="let account" margin-bottom>
       <ion-avatar item-left><img [src]="account.photoUrl"></ion-avatar>
@@ -35,14 +38,23 @@
         </ion-row>
       </div>
 
-      <button class="remove-account-button" (click)="deleteAccount(account.id)" item-right ion-button clear>
+      <button class="remove-account-button" (click)="deleteAccount(account.accountId)" item-right ion-button clear>
         <ion-icon name="close"></ion-icon>
       </button>
     </ion-item>
   </ion-list>
-
+  
   <button ion-button block icon-only large color="primary" (click)="addAccount()">
     <ion-icon name="add"></ion-icon>
   </button>
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-dropdown"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
 
 </ion-content>

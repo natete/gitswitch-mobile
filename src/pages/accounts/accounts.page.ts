@@ -1,36 +1,50 @@
 import { Component } from '@angular/core';
-import { AlertController, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { AlertController, LoadingController } from 'ionic-angular';
 import { AccountsService } from './accounts.service';
 import { Account } from './account';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'page-accounts',
   templateUrl: 'accounts.page.html'
 })
 export class AccountsPage {
-  accounts: Account[];
+  accounts: Account[] = [];
+  loader;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private alertCtrl: AlertController,
-              private loadingingCtrl: LoadingController,
+  constructor(private alertCtrl: AlertController,
+              private loadingCtrl: LoadingController,
               private accountsService: AccountsService) {}
 
   ionViewDidLoad() {
-    const loader = this.loadingingCtrl.create({
-      content: 'Getting accounts...'
-    });
+    this.initLoader('Getting accounts...');
 
-    loader.present();
+    this.getAccounts();
+  }
 
+  getAccounts() {
     this.accountsService
         .getAccounts()
         .subscribe(accounts => {
-          this.accounts = accounts;
-          loader
-            .dismiss()
-            .catch(() => console.log('Already dismissed'));
-        });
+            this.accounts = accounts;
+            this.loader
+                .dismiss()
+                .catch(() => console.log('Already dismissed'));
+          },
+          err => {
+            this.loader
+                .dismiss()
+                .catch(() => console.log('Already dismissed'));
+            return Observable.throw(err);
+          });
+  }
+
+  private initLoader(msg) {
+    this.loader = this.loadingCtrl.create({
+      content: msg
+    });
+
+    this.loader.present();
   }
 
   /**
@@ -45,16 +59,31 @@ export class AccountsPage {
    * @param accountId the id of the account to be deleted.
    */
   deleteAccount(accountId: number): void {
+    this.initLoader('Deleting account...');
+
     const confirm = this.alertCtrl.create({
       title: 'Remove account',
       message: 'Are you sure you want to remove the account?',
       buttons: [
-        { text: 'Cancel' },
+        {
+          text: 'Cancel', handler: () => this.loader
+                                             .dismiss()
+                                             .catch(() => console.log('Already dismissed'))
+        },
         { text: 'Yes', handler: () => this.proceedRemoveAccount(accountId) }
       ]
     });
 
     confirm.present();
+  }
+
+  doRefresh(refresher) {
+    console.log('Begin async operation', refresher);
+
+    setTimeout(() => {
+      console.log('Async operation has ended');
+      refresher.complete();
+    }, 2000);
   }
 
   /**

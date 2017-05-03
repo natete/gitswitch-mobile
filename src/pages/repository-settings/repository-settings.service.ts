@@ -13,15 +13,16 @@ export class RepositorySettingsService {
   getRepositorySettings(settingId: number): Observable<RepositorySetting> {
     const url = `${Constants.BACKEND_URL}/${this.REPOSITORYSETTINGS_URL}/${settingId}`;
     return this.http
-        .get(url)
-        .map(response => response.json().data as RepositorySetting);
+               .get(url)
+               .map(response => response.json().data as RepositorySetting);
   }
 
-  updateRepositorySettings(repositorySetting: RepositorySetting):  Promise<RepositorySetting>{
+  updateRepositorySettings(repositorySetting: RepositorySetting): Promise<RepositorySetting> {
     const url = `${Constants.BACKEND_URL}/${this.REPOSITORYSETTINGS_URL}/${repositorySetting.id}`;
     return this.http
-      .put(url, JSON.stringify(repositorySetting))
-      .toPromise();
+               .put(url, JSON.stringify(repositorySetting))
+               .map(response => response.json().data as RepositorySetting)
+               .toPromise();
   }
 
 }

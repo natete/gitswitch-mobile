@@ -13,13 +13,16 @@
 </ion-header>
 
 <ion-content>
+  <div *ngIf="pullRequests && pullRequests.length === 0" class="no-pull-request-container" color="light">
+    You do not have any open pull request!
+  </div>
   <ion-list [virtualScroll]="pullRequests" no-lines approxItemHeight="210px">
     <ion-item *virtualItem="let pullRequest" color="dark">
 
       <ion-card class="top-bottom-margin">
 
         <ion-card-header color="light" class="text-ellipsis">
-          {{pullRequest.description}}
+          {{pullRequest.title}}
         </ion-card-header>
 
         <ion-card-content>
@@ -29,7 +32,7 @@
               <strong>
                 <ion-icon name="git-pull-request"></ion-icon>
               </strong>
-              <div><strong>{{pullRequest.count}}</strong></div>
+              <div><strong>{{pullRequest.id}}</strong></div>
             </div>
             <div class="branches-wrapper">
               <h4 class="text-ellipsis"><strong>from</strong> {{pullRequest.from}}</h4>
@@ -38,21 +41,17 @@
           </ion-row>
 
           <ion-row color="primary" class="color-primary">
-            <ion-col col-8 col-sm class="text-ellipsis">
+            <ion-col col-12 col-sm class="text-ellipsis">
+              <ion-icon name="book" item-left></ion-icon>
+              {{pullRequest.from_repo_name}}
+            </ion-col>
+            <ion-col col-6 col-sm class="text-ellipsis">
               <ion-icon name="contact" item-left></ion-icon>
-              {{pullRequest.userName}}
+              {{pullRequest.username}}
             </ion-col>
-            <ion-col col-4 col-sm>
-              <ion-icon name="git-commit" item-left></ion-icon>
-              {{pullRequest.commits}}
-            </ion-col>
-            <ion-col col-8 col-sm class="text-ellipsis">
+            <ion-col col-6 col-sm class="text-ellipsis">
               <ion-icon ios="ios-time-outline" md="md-time" item-left></ion-icon>
               {{pullRequest.date}}
-            </ion-col>
-            <ion-col col-4 col-sm>
-              <ion-icon name="chatboxes" item-left></ion-icon>
-              {{pullRequest.comments}}
             </ion-col>
           </ion-row>
 

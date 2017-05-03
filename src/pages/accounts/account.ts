@@ -8,4 +8,5 @@ export interface Account {
   repoNumber: number;
   organization: string;
   location: string;
+  accountId: number;
 }

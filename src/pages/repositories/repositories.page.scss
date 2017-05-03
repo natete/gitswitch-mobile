@@ -1,5 +1,10 @@
-page-settings {
-  .item-content {
+page-repositories {
+
+  .back-button.show-back-button {
+    display: none;
+  }
+
+  item-content {
 
     .setting-info-container {
       .icon {
@@ -28,8 +33,4 @@ page-settings {
   .large-icon{
     font-size: 4rem;
   }
-
-
-
-
 }

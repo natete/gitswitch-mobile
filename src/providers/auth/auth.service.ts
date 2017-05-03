@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import { TokenService } from './token.service';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Constants } from '../../shared/constants';
+import { Auth } from './auth';
 
 @Injectable()
 export class AuthService {
@@ -13,16 +14,19 @@ export class AuthService {
   constructor(private http: Http,
               private tokenService: TokenService) {
 
-    this.tokenService
-        .getToken()
-        .then(token => this.authSubject.next(true))
-        .catch(() => this.authSubject.next(false));
+  }
+
+  init() {
+    const token = this.tokenService.getToken();
+
+    this.authSubject.next(!!token);
   }
 
   /**
    * @returns {Observable<void>} An observable of the auth state.
    */
   getAuthStream(): Observable<boolean> {
+    this.init();
     return this.authSubject.asObservable();
   }
 
@@ -32,14 +36,16 @@ export class AuthService {
    * @param password
    * @returns {Promise<void|void>} That resolves if everything goes fine or it's rejected otherwise.
    */
-  login(username: string, password: string): Promise<boolean> {
+  login(username: string, password: string): Promise<void> {
     const loginEndpoint = 'oauth/token';
     const requestBody = this.buildRequestBody(username, password);
 
     return this.http.post(`${Constants.BACKEND_URL}/${loginEndpoint}`, requestBody)
-               .toPromise()
-               .then(res => this.tokenService.setToken(res))
-               .then(() => this.authSubject.next(true));
+               .map(res => {
+                 this.tokenService.setToken(new Auth(res));
+                 this.authSubject.next(true);
+               })
+               .toPromise();
   }
 
   /**

@@ -1,20 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Http, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Account } from './account';
-import { InAppBrowser } from '@ionic-native/inappbrowser';
 import { Constants } from '../../shared/constants';
+import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
+import { ToastController } from 'ionic-angular';
 
 @Injectable()
 export class AccountsService {
   private readonly IN_APP_BROWSER_PARAMS = 'location=no,clearcache=yes';
-  private readonly ACCOUNTS_URL = 'api/simple_git/account';
+  private readonly ACCOUNTS_URL = `${Constants.BACKEND_URL}/api/simple_git/account`;
   private readonly FORMAT_URL = '?_format=json';
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
+  private toast;
 
-  constructor(private http: Http) {}
+  constructor(private http: Http,
+              private zone: NgZone,
+              private inAppBrowser: InAppBrowser,
+              private toastCtrl: ToastController) {}
 
   /**
    * Get the observable of the accounts the user has.
@@ -23,8 +28,12 @@ export class AccountsService {
   getAccounts(): Observable<Account[]> {
     if (this.accountsStream.getValue()) {
       this.http
-          .get(`${Constants.BACKEND_URL}/${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
-          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]));
+          .get(`${this.ACCOUNTS_URL}/all${this.FORMAT_URL}`)
+          .subscribe((accounts: any) => this.accountsStream.next(accounts as Account[]),
+            err => {
+              this.accountsStream.next([]);
+              console.error(err);
+            });
     }
 
     return this.accountsStream.asObservable();
@@ -41,7 +50,7 @@ export class AccountsService {
 
     const params: URLSearchParams = this.buildParams(redirectUri, nonce);
 
-    const browserRef = new InAppBrowser(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+    const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
 
     browserRef.on('loadstart')
               .filter(event => event.url.indexOf(redirectUri) === 0)
@@ -53,12 +62,19 @@ export class AccountsService {
    * @param accountId the id  of account to be deleted
    */
   deleteAccount(accountId: number): void {
-    const url = `${Constants.BACKEND_URL}/${this.ACCOUNTS_URL}/${accountId}`;
+    const url = `${this.ACCOUNTS_URL}/${accountId}`;
     this.http
         .delete(url)
-        .subscribe(() => this.accountsStream.next(
-          this.accountsStream.getValue()
-              .filter((ac: Account) => ac.id !== accountId))
+        .subscribe(() => {
+            this.accountsStream.next(
+              this.accountsStream.getValue()
+                  .filter((ac: Account) => ac.accountId !== accountId));
+            this.initToast(`Account deleted successfully`);
+          },
+          err => {
+            console.error(err);
+            return Observable.throw(err);
+          }
         );
   }
 
@@ -101,21 +117,29 @@ export class AccountsService {
    * @param nonce
    * @param browserRef
    */
-  private handleOAuthCode(event, nonce: string, browserRef: InAppBrowser) {
+  private handleOAuthCode(event, nonce: string, browserRef: InAppBrowserObject) {
     const urlParams = event.url.split('?')[1];
     const params: any = urlParams
       .split('&')
       .reduce((acc, param) => this.stringParamToObjectParam(acc, param), {});
-    const url = `${Constants.BACKEND_URL}/${this.ACCOUNTS_URL}${this.FORMAT_URL}`;
+    const url = `${this.ACCOUNTS_URL}${this.FORMAT_URL}`;
 
     if (params.state === nonce) {
       this.http
           .post(url, JSON.stringify(params))
           .subscribe((account: any) => {
-            const accounts: Account[] = this.accountsStream.getValue();
-            accounts.push(account as Account);
-            this.accountsStream.next(accounts);
-          });
+              const accounts: Account[] = this.accountsStream.getValue();
+              accounts.push(account as Account);
+              this.zone.run(() => this.accountsStream.next(accounts));
+              this.initToast(`Account added successfully`);
+            },
+            err => {
+              if (err.status === 409) {
+                this.initToast(`You've already added this account`);
+              }
+              console.error(err);
+              return Observable.throw(err);
+            });
     }
 
     browserRef.close();
@@ -131,5 +155,19 @@ export class AccountsService {
     const paramArray = param.split('=');
     accumulator[paramArray[0]] = paramArray[1];
     return accumulator;
+  }
+
+  private initToast(msg) {
+    this.toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'pop'
+    });
+
+    this.toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+
+    this.toast.present();
   }
 }

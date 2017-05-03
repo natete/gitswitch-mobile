@@ -1,5 +1,4 @@
 page-accounts {
-
   ion-item.item-block {
     box-sizing: content-box;
   }
@@ -19,5 +18,11 @@ page-accounts {
 
   .remove-account-button.item-button {
     font-size: 2.8rem;
+  }
+
+  .no-accounts-container {
+    margin-top: 1em;
+    text-align: center;
+    color: map-get($colors, light);
   }
 }

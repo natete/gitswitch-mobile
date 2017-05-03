@@ -3,12 +3,10 @@ import { Http, RequestOptions, XHRBackend, Response, Headers, RequestOptionsArgs
 import 'rxjs/add/operator/map';
 import { TokenService } from '../auth/token.service';
 import { Observable } from 'rxjs';
-import { Auth } from '../auth/auth';
 
 @Injectable()
 export class HttpService extends Http {
 
-  authData: Auth = new Auth();
   constructor(backend: XHRBackend,
               options: RequestOptions,
               private tokenService: TokenService) {
@@ -17,29 +15,37 @@ export class HttpService extends Http {
 
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
 
-    // const s = new Subject<Response>();
+    const authData = this.tokenService.getToken();
 
-    this.tokenService
-        .getToken()
-        .then(token => this.authData =  new Auth(token));
-
-    if (this.authData && this.authData.tokenType) {
+    if (authData && authData.tokenType) {
       if (typeof url === 'string') {
         if (!options) {
           options = { headers: new Headers() };
         }
-        options.headers.set('Authorization', `${this.authData.tokenType} ${this.authData.accessToken}`);
+        options.headers.set('Authorization', `${authData.tokenType} ${authData.accessToken}`);
       } else {
         // we have to add the token to the url object
-        url.headers.set('Authorization', `${this.authData.tokenType} ${this.authData.accessToken}`);
+        url.headers.set('Authorization', `${authData.tokenType} ${authData.accessToken}`);
         url.headers.set('Content-Type', 'application/json');
       }
     }
 
     return super.request(url, options)
-                .map(res => res.json());
+                .map(res => res.text() ? res.json() : {})
+                .catch(this.catchAuthError(this));
+  }
 
-    // return s.asObservable();
+
+
+  private catchAuthError(httpService: HttpService) {
+    return (res: Response) => {
+      if (res.status === 401 || res.status === 403) {
+        this.tokenService.revokeToken();
+      }
+      return Observable.throw(res);
+    }
   }
 
 }
+
+

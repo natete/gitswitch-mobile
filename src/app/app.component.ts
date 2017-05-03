@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, Nav } from 'ionic-angular';
-import { StatusBar, Splashscreen } from 'ionic-native';
+import { Nav, Platform } from 'ionic-angular';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { StatusBar } from '@ionic-native/status-bar';
 import { TabsPage } from '../pages/tabs/tabs';
 import { AuthService } from '../providers/auth/auth.service';
 import { LoginPage } from '../pages/login/login.page';
@@ -14,11 +15,11 @@ export class MyApp {
   rootPage: any;
 
   constructor(private platform: Platform,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private statusBar: StatusBar,
+              private splashScreen: SplashScreen) {
 
     this.initApp();
-
-    this.initLoginSubscription();
   }
 
   private initApp() {
@@ -26,12 +27,13 @@ export class MyApp {
         .then(() => {
           // Okay, so the platform is ready and our plugins are available.
           // Here you can do any higher level native things you might need.
-          StatusBar.styleDefault();
-          Splashscreen.hide();
+          this.statusBar.styleDefault();
+          this.splashScreen.hide();
+          this.initLoginSubscription();
         });
   }
 
-  initLoginSubscription() {
+  private initLoginSubscription() {
     this.authService
         .getAuthStream()
         .do(isLoggedIn => console.log(isLoggedIn))
