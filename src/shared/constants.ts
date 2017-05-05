@@ -1,7 +1,7 @@
 export class Constants {
   static GITHUB_API_URL = 'https://github.com/login/oauth/authorize?';
-  static BACKEND_URL = 'http://10.35.3.210:80/drupal-8';
-  static CLIENT_ID = '0e8489e3-ff5b-497e-a76f-305576519d9a';
-  static CLIENT_SECRET = 'ddd';
+  static BACKEND_URL = 'http://ci-team-red.emergyalabs.com/gitswitch';
+  static CLIENT_ID = 'f292c96f-9b3d-4a4b-b9cb-6ea68bd0762f';
+  static CLIENT_SECRET = 'test';
   static GRANT_TYPE = 'password';
 }
