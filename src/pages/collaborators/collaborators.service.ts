@@ -32,7 +32,7 @@ export class CollaboratorsService {
   }
 
   fetchReposCollaborators(repositories: Repository[]): Observable<Repository[]> {
-    return Observable.forkJoin(repositories.map(repository => repository.canAdmin ? this.fetchRepoCollaborators(repository) : Observable.of(repository)));
+    return repositories.length !== 0 ? Observable.forkJoin(repositories.map(repository => repository.canAdmin ? this.fetchRepoCollaborators(repository) : Observable.of(repository))) : Observable.of(repositories);
   }
 
   fetchRepoCollaborators(repository: Repository) {

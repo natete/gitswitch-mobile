@@ -48,13 +48,19 @@ export class AccountsService {
 
     const nonce = this.createNonce();
 
-    const params: URLSearchParams = this.buildParams(redirectUri, nonce);
+    this.http.get(`${Constants.BACKEND_URL}/api/simple_git/connector?_format=json`)
+        .subscribe(
+          (gitHubClient: any) => {
 
-    const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+            const params: URLSearchParams = this.buildParams(gitHubClient.client_id, redirectUri, nonce);
 
-    browserRef.on('loadstart')
-              .filter(event => event.url.indexOf(redirectUri) === 0)
-              .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
+            const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+
+            browserRef.on('loadstart')
+                      .filter(event => event.url.indexOf(redirectUri) === 0)
+                      .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
+          }
+        )
   }
 
   /**
@@ -100,10 +106,10 @@ export class AccountsService {
    * @param nonce a nonce to check the request hasn't been altered.
    * @returns {URLSearchParams} the object with the needed params.
    */
-  private buildParams(redirectUri: string, nonce: string): URLSearchParams {
+  private buildParams(client_id: string, redirectUri: string, nonce: string): URLSearchParams {
     const params = new URLSearchParams();
 
-    params.set('client_id', 'cf0f72380b77a0ae16e9');
+    params.set('client_id', client_id);
     params.set('redirect_uri', redirectUri);
     params.set('state', nonce);
     params.set('scope', 'user, repo');

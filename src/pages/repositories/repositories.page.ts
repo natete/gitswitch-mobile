@@ -68,10 +68,7 @@ export class RepositoriesPage {
   }
 
   private initLoader(msg) {
-    this.loader = this.loadingCtrl.create({
-      content: msg
-    });
-
+    this.loader = this.loadingCtrl.create({ content: msg });
     this.loader.present();
   }
 }
