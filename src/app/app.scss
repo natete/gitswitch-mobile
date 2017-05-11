@@ -45,3 +45,9 @@ ion-list.list {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.no-elements-container {
+  margin-top: 1em;
+  text-align: center;
+  color: map-get($colors, light);
+}

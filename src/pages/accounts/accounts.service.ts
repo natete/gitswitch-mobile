@@ -12,6 +12,7 @@ export class AccountsService {
   private readonly IN_APP_BROWSER_PARAMS = 'location=no,clearcache=yes';
   private readonly ACCOUNTS_URL = `${Constants.BACKEND_URL}/api/simple_git/account`;
   private readonly FORMAT_URL = '?_format=json';
+  private readonly GITHUB = 'GITHUB';
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
   private toast;
@@ -48,13 +49,22 @@ export class AccountsService {
 
     const nonce = this.createNonce();
 
-    const params: URLSearchParams = this.buildParams(redirectUri, nonce);
+    this.http.get(`${Constants.BACKEND_URL}/api/simple_git/connector?_format=json`)
+        .subscribe(
+          (gitHubClient: any) => {
+            for (let client of gitHubClient) {
+              if (client.type === this.GITHUB) {
+                const params: URLSearchParams = this.buildParams(client.client_id, redirectUri, nonce);
 
-    const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+                const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
 
-    browserRef.on('loadstart')
-              .filter(event => event.url.indexOf(redirectUri) === 0)
-              .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
+                browserRef.on('loadstart')
+                          .filter(event => event.url.indexOf(redirectUri) === 0)
+                          .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
+              }
+            }
+          }
+        )
   }
 
   /**
@@ -100,10 +110,10 @@ export class AccountsService {
    * @param nonce a nonce to check the request hasn't been altered.
    * @returns {URLSearchParams} the object with the needed params.
    */
-  private buildParams(redirectUri: string, nonce: string): URLSearchParams {
+  private buildParams(clientId: string, redirectUri: string, nonce: string): URLSearchParams {
     const params = new URLSearchParams();
 
-    params.set('client_id', 'cf0f72380b77a0ae16e9');
+    params.set('client_id', clientId);
     params.set('redirect_uri', redirectUri);
     params.set('state', nonce);
     params.set('scope', 'user, repo');

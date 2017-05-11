@@ -26,6 +26,9 @@
 
 <ion-content padding>
 
+  <div *ngIf="repositories && repositories.length === 0" class="no-elements-container" color="light">
+    You do not have any repositories!
+  </div>
   <ion-list class="repos-list" [virtualScroll]="repositories" approxItemHeight="108px">
     <ion-item *virtualItem="let repository" color="light" margin-bottom>
       <ion-icon class="large-icon" item-left [name]="repository.fork ? 'git-network' : 'book'"></ion-icon>
