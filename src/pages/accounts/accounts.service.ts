@@ -110,10 +110,10 @@ export class AccountsService {
    * @param nonce a nonce to check the request hasn't been altered.
    * @returns {URLSearchParams} the object with the needed params.
    */
-  private buildParams(client_id: string, redirectUri: string, nonce: string): URLSearchParams {
+  private buildParams(clientId: string, redirectUri: string, nonce: string): URLSearchParams {
     const params = new URLSearchParams();
 
-    params.set('client_id', client_id);
+    params.set('client_id', clientId);
     params.set('redirect_uri', redirectUri);
     params.set('state', nonce);
     params.set('scope', 'user, repo');
