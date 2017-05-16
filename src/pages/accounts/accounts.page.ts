@@ -3,6 +3,8 @@ import { AlertController, LoadingController } from 'ionic-angular';
 import { AccountsService } from './accounts.service';
 import { Account } from './account';
 import { Observable } from 'rxjs';
+import { RepositoriesService } from '../repositories/repositories.service';
+import { PullRequestsService } from '../pull-requests/pull-requests.service';
 
 @Component({
   selector: 'page-accounts',
@@ -14,7 +16,9 @@ export class AccountsPage {
 
   constructor(private alertCtrl: AlertController,
               private loadingCtrl: LoadingController,
-              private accountsService: AccountsService) {}
+              private accountsService: AccountsService,
+              private repositoriesService: RepositoriesService,
+              private pullRequestsService: PullRequestsService) {}
 
   ionViewDidLoad() {
     this.initLoader('Getting accounts...');
@@ -92,5 +96,7 @@ export class AccountsPage {
    */
   private proceedRemoveAccount(accountId: number): void {
     this.accountsService.deleteAccount(accountId);
+    this.repositoriesService.refreshConnectedRepositories();
+    this.pullRequestsService.refreshPullRequestList();
   }
 }

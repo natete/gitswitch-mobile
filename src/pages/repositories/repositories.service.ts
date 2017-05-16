@@ -13,7 +13,13 @@ export class RepositoriesService {
   private repositoriesStream = new BehaviorSubject<Repository[]>([]);
 
   constructor(private http: Http,
-              private collaboratorService: CollaboratorsService) {}
+              private collaboratorService: CollaboratorsService) {
+  }
+
+  refreshConnectedRepositories(): void {
+    this.getRepositories()
+        .subscribe((res: Repository[]) => this.repositoriesStream.next(res));
+  }
 
   /**
    * Get the observable of the repositories the user has.

@@ -10,13 +10,19 @@ export class PullRequestsService {
 
   private pullRequestsStream = new BehaviorSubject<PullRequest[]>([]);
 
-  constructor(private http: Http) {}
+  constructor(private http: Http) {
+  }
+
+  refreshPullRequestList(): void {
+    this.getPullRequest()
+        .subscribe((res: PullRequest[]) => this.pullRequestsStream.next(res));
+  }
 
   /**
    * Get the observable of the pull requests the user has.
    * @returns {Observable<T>} the observable of pull requests the user has.
    */
-  getPullRequests(): Observable<PullRequest[]> {
+  getPullRequest(): Observable<PullRequest[]> {
     if(this.pullRequestsStream.getValue()){
       this.http
           .get(`${Constants.BACKEND_URL}/${this.PULLREQUEST_URL}`)

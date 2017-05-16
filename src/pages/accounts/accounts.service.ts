@@ -12,7 +12,7 @@ export class AccountsService {
   private readonly IN_APP_BROWSER_PARAMS = 'location=no,clearcache=yes';
   private readonly ACCOUNTS_URL = `${Constants.BACKEND_URL}/api/simple_git/account`;
   private readonly FORMAT_URL = '?_format=json';
-  private readonly GITHUB = 'GITHUB';
+  private readonly GITHUB = 'GITHUBM';
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
   private toast;
@@ -52,17 +52,14 @@ export class AccountsService {
     this.http.get(`${Constants.BACKEND_URL}/api/simple_git/connector?_format=json`)
         .subscribe(
           (gitHubClient: any) => {
-            for (let client of gitHubClient) {
-              if (client.type === this.GITHUB) {
-                const params: URLSearchParams = this.buildParams(client.client_id, redirectUri, nonce);
+            let client = gitHubClient.find((client: any) => client.type === this.GITHUB);
+            const params: URLSearchParams = this.buildParams(client.client_id, redirectUri, nonce);
 
-                const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+            const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
 
-                browserRef.on('loadstart')
+            browserRef.on('loadstart')
                           .filter(event => event.url.indexOf(redirectUri) === 0)
                           .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
-              }
-            }
           }
         )
   }
@@ -128,7 +125,8 @@ export class AccountsService {
    * @param browserRef
    */
   private handleOAuthCode(event, nonce: string, browserRef: InAppBrowserObject) {
-    const urlParams = event.url.split('?')[1];
+    const urlExample = event.url + '&type=GITHUBM';
+    const urlParams = urlExample.split('?')[1];
     const params: any = urlParams
       .split('&')
       .reduce((acc, param) => this.stringParamToObjectParam(acc, param), {});
