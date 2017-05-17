@@ -1,7 +1,20 @@
 const gulp = require('gulp'),
   cheerio = require('gulp-cheerio'),
   del = require('del'),
-  zip = require('gulp-zip');
+  zip = require('gulp-zip'),
+  runSequence = require('run-sequence');
+
+gulp.task('copy', ['copy-resources', 'copy-www', 'splash-resources']);
+
+gulp.task('copy-resources', function () {
+  return gulp.src('./resources/**/*', { base: './' })
+    .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('copy-www', function () {
+  return gulp.src('./www/**/*')
+    .pipe(gulp.dest('./dist'));
+});
 
 gulp.task('splash-resources', function () {
   return gulp.src('config.xml')
@@ -26,19 +39,7 @@ gulp.task('splash-resources', function () {
     .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('copy', ['copy-resources', 'copy-www', 'clean-dist', 'splash-resources']);
-
-gulp.task('copy-resources', function () {
-  return gulp.src('./resources/**/*', { base: './' })
-    .pipe(gulp.dest('./dist'));
-});
-
-gulp.task('copy-www', function () {
-  return gulp.src('./www/**/*')
-    .pipe(gulp.dest('./dist'));
-});
-
-gulp.task('zip', ['copy'], function () {
+gulp.task('zip', function () {
   const time = new Date();
   return gulp.src('./dist/**/*')
     .pipe(zip(`upload-${time.getTime()}.zip`))
@@ -46,5 +47,9 @@ gulp.task('zip', ['copy'], function () {
 });
 
 gulp.task('clean-dist', function () {
-  del('./dist');
+  return del('./dist');
+});
+
+gulp.task('default', function (callback) {
+  runSequence('clean-dist', 'copy', 'zip',  callback);
 });
