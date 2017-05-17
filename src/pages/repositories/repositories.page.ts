@@ -40,14 +40,15 @@ export class RepositoriesPage {
         .subscribe(repositories => {
             this.repositories = repositories || [];
             if (repositories) {
+              console.log(this.repositories);
               this.loader.dismissAll();
             }
           },
           err => {return Observable.throw(err)});
   }
 
-  goToRepositorySettings(setting) {
-    this.navCtrl.push(RepositorySettingsPage, setting);
+  goToRepositorySettings(repository) {
+    this.navCtrl.push(RepositorySettingsPage, { repository });
   }
 
   goToUsers(action: string) {

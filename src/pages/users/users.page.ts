@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavParams, NavController, LoadingController } from 'ionic-angular';
+import { LoadingController, NavController, NavParams } from 'ionic-angular';
 import { User } from './user';
 import { UsersService } from './users.service';
 import { CollaboratorsPage } from '../collaborators/collaborators.page';
@@ -43,14 +43,10 @@ export class UsersPage {
                 this.username = '';
                 this.users = [];
               }
-              this.loader
-                  .dismiss()
-                  .catch(() => console.log('Already dismissed'));
+              this.loader.dismissAll();
             },
             err => {
-              this.loader
-                  .dismiss()
-                  .catch(() => console.log('Already dismissed'));
+              this.loader.dismissAll();
               console.error(err);
             });
     }

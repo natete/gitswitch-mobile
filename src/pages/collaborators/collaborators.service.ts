@@ -32,7 +32,10 @@ export class CollaboratorsService {
   }
 
   fetchReposCollaborators(repositories: Repository[]): Observable<Repository[]> {
-    return repositories.length !== 0 ? Observable.forkJoin(repositories.map(repository => repository.canAdmin ? this.fetchRepoCollaborators(repository) : Observable.of(repository))) : Observable.of(repositories);
+    return repositories.length !== 0 ? Observable.forkJoin(repositories.map(repository =>
+      repository.canAdmin
+        ? this.fetchRepoCollaborators(repository)
+        : Observable.of(repository))) : Observable.of(repositories);
   }
 
   fetchRepoCollaborators(repository: Repository) {
@@ -72,8 +75,9 @@ export class CollaboratorsService {
     this.http
         .delete(`${this.COLLABORATORS_URL}/${repository.accountId}/${repository.username}/${repository.name}/${user.username}${this.FORMAT_URL}`)
         .subscribe(
-          () => this.collaboratorsStream.next(this.collaboratorsStream.getValue().filter((co: Collaborator) => co.username !== user.username))),
-          err => {return Observable.throw(err)};
+          () => this.collaboratorsStream.next(this.collaboratorsStream.getValue()
+                                                  .filter((co: Collaborator) => co.username !== user.username))),
+      err => {return Observable.throw(err)};
 
   }
 

@@ -190,10 +190,6 @@ export class AccountsService {
       position: 'pop'
     });
 
-    this.toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
-    });
-
     this.toast.present();
   }
 }

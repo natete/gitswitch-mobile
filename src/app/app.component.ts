@@ -36,7 +36,6 @@ export class MyApp {
   private initLoginSubscription() {
     this.authService
         .getAuthStream()
-        .do(isLoggedIn => console.log(isLoggedIn))
         .subscribe(isLoggedIn => isLoggedIn ? this.nav.setRoot(TabsPage) : this.nav.setRoot(LoginPage));
   }
 }

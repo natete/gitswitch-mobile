@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoadingController, NavController } from 'ionic-angular';
+import { LoadingController, NavController, NavParams } from 'ionic-angular';
 import { Repository } from '../repositories/repository';
 import { RepositorySetting } from './repository-setting';
 import { RepositorySettingsService } from './repository-settings.service';
@@ -23,6 +23,7 @@ export class RepositorySettingsPage {
   private loader;
 
   constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private loadingCtrl: LoadingController,
               private repositorySettingsService: RepositorySettingsService) {
 
@@ -30,6 +31,8 @@ export class RepositorySettingsPage {
 
   ionViewDidLoad() {
     this.initLoader('Getting repository setting...');
+
+    this.repository = this.navParams.get('repository');
 
     this.getRepositorySettings();
   }
@@ -39,22 +42,17 @@ export class RepositorySettingsPage {
   }
 
   private initLoader(msg) {
-    this.loader = this.loadingCtrl.create({
-      content: msg
-    });
+    this.loader = this.loadingCtrl.create({ content: msg });
 
     this.loader.present();
   }
 
   getRepositorySettings() {
-    this.repositorySettingsService
-        .getRepositorySettings(this.repository.id)
+    this.repositorySettingsService.getRepositorySettings(this.repository.id)
         .filter(repoSettings => !!repoSettings)
         .subscribe(repositorySetting => {
             this.repositorySetting = repositorySetting;
-            this.loader
-                .dismiss()
-                .catch(() => console.log('Already dismissed'));
+            this.loader.dismissAll();
           },
           err => {return Observable.throw(err)});
   }
