@@ -27,14 +27,10 @@ export class AccountsPage {
         .getAccounts()
         .subscribe(accounts => {
             this.accounts = accounts;
-            this.loader
-                .dismiss()
-                .catch(() => console.log('Already dismissed'));
+            this.loader.dismissAll();
           },
           err => {
-            this.loader
-                .dismiss()
-                .catch(() => console.log('Already dismissed'));
+            this.loader.dismissAll();
             return Observable.throw(err);
           });
   }
@@ -51,6 +47,7 @@ export class AccountsPage {
    * Starts the process to add a new account.
    */
   addAccount(): void {
+    this.initLoader('Adding account...');
     this.accountsService.addAccount();
   }
 
@@ -65,12 +62,8 @@ export class AccountsPage {
       title: 'Remove account',
       message: 'Are you sure you want to remove the account?',
       buttons: [
-        {
-          text: 'Cancel', handler: () => this.loader
-                                             .dismiss()
-                                             .catch(() => console.log('Already dismissed'))
-        },
-        { text: 'Yes', handler: () => this.proceedRemoveAccount(accountId) }
+        { text: 'Cancel', handler: () => this.loader.dismissAll() },
+        { text: 'Yes', handler: () => this.accountsService.deleteAccount(accountId) }
       ]
     });
 
@@ -86,11 +79,11 @@ export class AccountsPage {
     }, 2000);
   }
 
-  /**
-   * Deletes the given account.
-   * @param accountId the id of the account to be deleted.
-   */
-  private proceedRemoveAccount(accountId: number): void {
-    this.accountsService.deleteAccount(accountId);
-  }
+  // /**
+  //  * Deletes the given account.
+  //  * @param accountId the id of the account to be deleted.
+  //  */
+  // private proceedRemoveAccount(accountId: number): void {
+  //   this.accountsService.deleteAccount(accountId);
+  // }
 }

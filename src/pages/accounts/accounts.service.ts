@@ -6,13 +6,15 @@ import { Account } from './account';
 import { Constants } from '../../shared/constants';
 import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { ToastController } from 'ionic-angular';
+import { PullRequestsService } from '../pull-requests/pull-requests.service';
+import { RepositoriesService } from '../repositories/repositories.service';
 
 @Injectable()
 export class AccountsService {
   private readonly IN_APP_BROWSER_PARAMS = 'location=no,clearcache=yes';
   private readonly ACCOUNTS_URL = `${Constants.BACKEND_URL}/api/simple_git/account`;
   private readonly FORMAT_URL = '?_format=json';
-  private readonly GITHUB = 'GITHUB';
+  private readonly GITHUB = 'GITHUBM';
 
   private accountsStream = new BehaviorSubject<Account[]>([]);
   private toast;
@@ -20,7 +22,9 @@ export class AccountsService {
   constructor(private http: Http,
               private zone: NgZone,
               private inAppBrowser: InAppBrowser,
-              private toastCtrl: ToastController) {}
+              private toastCtrl: ToastController,
+              private pullRequestsService: PullRequestsService,
+              private repositoriesService: RepositoriesService) {}
 
   /**
    * Get the observable of the accounts the user has.
@@ -45,26 +49,23 @@ export class AccountsService {
    */
   addAccount(): void {
 
-    const redirectUri = `${window.location.protocol}//localhost:${window.location.port}/accounts${this.FORMAT_URL}`;
+    const redirectUri = 'http://localhost/accounts';
 
     const nonce = this.createNonce();
 
     this.http.get(`${Constants.BACKEND_URL}/api/simple_git/connector?_format=json`)
         .subscribe(
           (gitHubClient: any) => {
-            for (let client of gitHubClient) {
-              if (client.type === this.GITHUB) {
-                const params: URLSearchParams = this.buildParams(client.client_id, redirectUri, nonce);
+            let client = gitHubClient.find((client: any) => client.type === this.GITHUB);
+            const params: URLSearchParams = this.buildParams(client.client_id, redirectUri, nonce);
 
-                const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
+            const browserRef = this.inAppBrowser.create(Constants.GITHUB_API_URL + params.toString(), '_blank', this.IN_APP_BROWSER_PARAMS);
 
-                browserRef.on('loadstart')
-                          .filter(event => event.url.indexOf(redirectUri) === 0)
-                          .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
-              }
-            }
+            browserRef.on('loadstart')
+                      .filter(event => event.url.indexOf(redirectUri) === 0)
+                      .subscribe(event => this.handleOAuthCode(event, nonce, browserRef));
           }
-        )
+        );
   }
 
   /**
@@ -78,7 +79,11 @@ export class AccountsService {
         .subscribe(() => {
             this.accountsStream.next(
               this.accountsStream.getValue()
-                  .filter((ac: Account) => ac.accountId !== accountId));
+                  .filter((ac: Account) => ac.accountId !== accountId)
+            );
+
+            this.updateReposAndPullRequests();
+
             this.initToast(`Account deleted successfully`);
           },
           err => {
@@ -86,6 +91,14 @@ export class AccountsService {
             return Observable.throw(err);
           }
         );
+  }
+
+  private updateReposAndPullRequests() {
+    this.pullRequestsService.refreshPullRequestList();
+
+    if (this.repositoriesService.isInit) {
+      this.repositoriesService.refreshConnectedRepositories();
+    }
   }
 
   /**
@@ -106,6 +119,7 @@ export class AccountsService {
 
   /**
    * Builds the required params to send a request to github to present its login page.
+   * @param clientId: the id of the git client to bu used
    * @param redirectUri the uri to be redirected after login success.
    * @param nonce a nonce to check the request hasn't been altered.
    * @returns {URLSearchParams} the object with the needed params.
@@ -128,7 +142,8 @@ export class AccountsService {
    * @param browserRef
    */
   private handleOAuthCode(event, nonce: string, browserRef: InAppBrowserObject) {
-    const urlParams = event.url.split('?')[1];
+    const urlExample = event.url + '&type=GITHUBM';
+    const urlParams = urlExample.split('?')[1];
     const params: any = urlParams
       .split('&')
       .reduce((acc, param) => this.stringParamToObjectParam(acc, param), {});
@@ -142,6 +157,7 @@ export class AccountsService {
               accounts.push(account as Account);
               this.zone.run(() => this.accountsStream.next(accounts));
               this.initToast(`Account added successfully`);
+              this.updateReposAndPullRequests();
             },
             err => {
               if (err.status === 409) {
@@ -172,10 +188,6 @@ export class AccountsService {
       message: msg,
       duration: 3000,
       position: 'pop'
-    });
-
-    this.toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
     });
 
     this.toast.present();

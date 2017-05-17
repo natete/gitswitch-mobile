@@ -1,4 +1,4 @@
-import { NavParams, NavController, AlertController, ToastController } from 'ionic-angular';
+import { AlertController, NavController, NavParams, ToastController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { User } from '../users/user';
 import { Repository } from '../repositories/repository';
@@ -47,10 +47,6 @@ export class CollaboratorsPage {
       message: msg,
       duration: 3000,
       position: 'pop'
-    });
-
-    this.toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
     });
 
     this.toast.present();
