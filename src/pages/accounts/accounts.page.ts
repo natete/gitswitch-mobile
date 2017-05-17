@@ -3,8 +3,6 @@ import { AlertController, LoadingController } from 'ionic-angular';
 import { AccountsService } from './accounts.service';
 import { Account } from './account';
 import { Observable } from 'rxjs';
-import { RepositoriesService } from '../repositories/repositories.service';
-import { PullRequestsService } from '../pull-requests/pull-requests.service';
 
 @Component({
   selector: 'page-accounts',
@@ -16,9 +14,7 @@ export class AccountsPage {
 
   constructor(private alertCtrl: AlertController,
               private loadingCtrl: LoadingController,
-              private accountsService: AccountsService,
-              private repositoriesService: RepositoriesService,
-              private pullRequestsService: PullRequestsService) {}
+              private accountsService: AccountsService) {}
 
   ionViewDidLoad() {
     this.initLoader('Getting accounts...');
@@ -31,14 +27,10 @@ export class AccountsPage {
         .getAccounts()
         .subscribe(accounts => {
             this.accounts = accounts;
-            this.loader
-                .dismiss()
-                .catch(() => console.log('Already dismissed'));
+            this.loader.dismissAll();
           },
           err => {
-            this.loader
-                .dismiss()
-                .catch(() => console.log('Already dismissed'));
+            this.loader.dismissAll();
             return Observable.throw(err);
           });
   }
@@ -55,6 +47,7 @@ export class AccountsPage {
    * Starts the process to add a new account.
    */
   addAccount(): void {
+    this.initLoader('Adding account...');
     this.accountsService.addAccount();
   }
 
@@ -96,7 +89,7 @@ export class AccountsPage {
    */
   private proceedRemoveAccount(accountId: number): void {
     this.accountsService.deleteAccount(accountId);
-    this.repositoriesService.refreshConnectedRepositories();
-    this.pullRequestsService.refreshPullRequestList();
+    // this.repositoriesService.refreshConnectedRepositories();
+    // this.pullRequestsService.refreshPullRequestList();
   }
 }

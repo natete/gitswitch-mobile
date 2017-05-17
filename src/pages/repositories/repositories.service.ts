@@ -10,15 +10,30 @@ export class RepositoriesService {
   private readonly REPOSITORIES_URL = `${Constants.BACKEND_URL}/api/simple_git/repository`;
   private readonly FORMAT_URL = '?_format=json';
 
-  private repositoriesStream = new BehaviorSubject<Repository[]>([]);
+  private repositoriesStream = new BehaviorSubject<Repository[]>(null);
+
+  isInit = false;
+  isLoading = false;
 
   constructor(private http: Http,
-              private collaboratorService: CollaboratorsService) {
+              private collaboratorService: CollaboratorsService) { }
+
+  init() {
+    this.refreshConnectedRepositories();
+    this.isInit = true;
   }
 
   refreshConnectedRepositories(): void {
-    this.getRepositories()
-        .subscribe((res: Repository[]) => this.repositoriesStream.next(res));
+    this.isLoading = true;
+    this.http
+        .get(`${this.REPOSITORIES_URL}/all/all${this.FORMAT_URL}`)
+        .map((res: any) => res as Repository[])
+        .flatMap(repositories => this.collaboratorService.fetchReposCollaborators(repositories))
+        .catch((error: any) => Observable.throw(error))
+        .subscribe(repositories => {
+          this.repositoriesStream.next(repositories);
+          this.isLoading = false;
+        });
   }
 
   /**
@@ -26,11 +41,6 @@ export class RepositoriesService {
    * @returns {Observable<T>} the observable of repositories the user has.
    */
   getRepositories(): Observable<Repository[]> {
-    return this.http
-               .get(`${this.REPOSITORIES_URL}/all/all${this.FORMAT_URL}`)
-               .map((res: any) => res as Repository[])
-               .flatMap(repositories => this.collaboratorService.fetchReposCollaborators(repositories))
-               .catch((error: any) => Observable.throw(error));
+    return this.repositoriesStream.asObservable();
   }
-
 }

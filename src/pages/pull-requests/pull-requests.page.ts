@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoadingController } from 'ionic-angular';
+import { Loading, LoadingController } from 'ionic-angular';
 import { PullRequest } from './pull-request';
 import { PullRequestsService } from './pull-requests.service';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 export class PullRequestsPage {
 
   pullRequests: PullRequest[];
-  private loader;
+  private loader: Loading;
 
   constructor(private loadingCtrl: LoadingController,
               private pullRequestsService: PullRequestsService) {}
@@ -19,17 +19,25 @@ export class PullRequestsPage {
   ionViewDidLoad() {
     this.initLoader('Getting pull request...');
 
+    this.pullRequestsService.init();
+
     this.getPullRequests();
+  }
+
+  ionViewDidEnter() {
+    if (this.pullRequestsService.isLoading) {
+      this.initLoader('Getting pull request...');
+    }
   }
 
   getPullRequests() {
     this.pullRequestsService
         .getPullRequests()
         .subscribe(pullRequests => {
-          this.pullRequests = pullRequests;
-          this.loader
-            .dismiss()
-            .catch(() => console.log('Already dismissed'));
+            this.pullRequests = pullRequests || [];
+            if (pullRequests) {
+              this.loader.dismissAll();
+            }
           },
           err => {return Observable.throw(err)});
   }
